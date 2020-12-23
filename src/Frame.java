@@ -1,3 +1,5 @@
+import javafx.beans.binding.MapBinding;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseWheelEvent;
@@ -13,8 +15,9 @@ public class Frame extends JFrame implements MouseWheelListener {
     double scaleSpeed = 0.003;
     int x0;
     int y0;
-    Rail rail;
+    RailBlock railBlock;
     Tram tram;
+    MapBlock mapBlock;
     double currentScale;
     double targetScale;
     long prevTime;
@@ -31,10 +34,11 @@ public class Frame extends JFrame implements MouseWheelListener {
         this.setVisible(true);
 
         currentScale = targetScale = 2;
-        rail = new Rail();
-        tram = new Tram(rail);
-        x0 = (int) (tram.x - this.getWidth() / 2 * currentScale + rail.width / 2);
-        y0 = (int) (rail.height - this.getHeight() * currentScale);
+        mapBlock = new MapBlock();
+        x0 = 1500;
+        y0 = (int) (mapBlock.height - this.getHeight() * currentScale);
+        railBlock = new RailBlock(x0 + getWidth() / 2, 6000);
+        tram = new Tram(railBlock);
         prevTime = System.currentTimeMillis();
 
         people = new ArrayList<>();
@@ -67,13 +71,25 @@ public class Frame extends JFrame implements MouseWheelListener {
                 else g.setColor(new Color(169, 214, 81));
 
                 g.fillRect((int) ((m * 60 - x0) / currentScale), (int) ((n * 60 - y0) / currentScale),
-                        ((int) ( ((m+1) * 60 - x0) / currentScale)-(int) ((m * 60 - x0) / currentScale)),
+                        ((int) (((m+1) * 60 - x0) / currentScale)-(int) ((m * 60 - x0) / currentScale)),
                         ((int) ( ((n+1) * 60 - y0) / currentScale)-(int) ((n * 60 - y0) / currentScale)));
             }
 
+        // рельса
         g.setColor(Color.black);
+        g.drawRect((int) ((railBlock.x - x0) / currentScale),(int) ((railBlock.y - y0) / currentScale),(int) (railBlock.width / currentScale), (int)(railBlock.height / currentScale));
+        g.drawLine(railBlock.x - x0, (int) ((railBlock.y - y0) / currentScale), railBlock.x - x0, (int) ((railBlock.y - y0) / currentScale) + railBlock.height);
+        System.out.println((railBlock.x - x0) / currentScale);
+        System.out.println(railBlock.x - x0);
+        System.out.println((int) ((railBlock.y - y0) / currentScale));
+        System.out.println(y0 + this.getHeight());
 
-        g.drawRect((int) ((rail.x - x0) / currentScale),(int) ((rail.y - y0) / currentScale),(int) (rail.width / currentScale), (int)(rail.height / currentScale));
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        // трамвайка
         g.setColor(Color.cyan);
         g.fillRect((int) ((tram.x - x0) / currentScale),(int) ((tram.y - y0) / currentScale),(int) (tram.width / currentScale), (int) (tram.height / currentScale));
 
@@ -81,14 +97,14 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         tram.y -= speed;
         if (tram.y <= - tram.height){
-            tram.y = rail.height;
-            y0 = (int) (rail.height - this.getHeight() * currentScale);
+            tram.y = railBlock.height;
+            y0 = (int) (railBlock.height - this.getHeight() * currentScale);
         }
-        else if (y0 > rail.y && tram.y < rail.height - this.getHeight() / 2 * currentScale)
+        else if (y0 > railBlock.y && tram.y < railBlock.height - this.getHeight() / 2 * currentScale)
             y0 = (int) (tram.y - this.getHeight() / 2 * currentScale);
-        else if (tram.y > rail.height / 2) y0 = (int) (rail.height - this.getHeight() * currentScale);
+        else if (tram.y > railBlock.height / 2) y0 = (int) (railBlock.height - this.getHeight() * currentScale);
 
-        x0 = (int) (tram.x - this.getWidth() / 2 * currentScale + rail.width / 2);
+        x0 = (int) (tram.x - this.getWidth() / 2 * currentScale + railBlock.width / 2);
 
         // Людишки(бедолаги)
         synchronized (people) {
@@ -99,7 +115,7 @@ public class Frame extends JFrame implements MouseWheelListener {
                 person.x += Math.cos(Math.toRadians(person.angleDeg)) * person.speed;
                 person.y += Math.sin(Math.toRadians(person.angleDeg)) * person.speed;
 
-                if (person.x < 400 || person.x > 400 + 2000 * 2.7){
+                if (person.x < 400 || person.x > 400 + 2000 * 2.7 || person.y < 0 || person.y > railBlock.height){
                     peopleToBeRemoved.add(person);
                 }
 

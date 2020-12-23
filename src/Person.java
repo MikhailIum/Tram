@@ -10,7 +10,7 @@ public class Person {
 
     Person(Frame frame){
         x = new Random().nextInt((int) (frame.currentScale * frame.getWidth())) + frame.x0;
-        y = new Random().nextInt(frame.rail.height);
+        y = new Random().nextInt(frame.railBlock.height);
         angleDeg = new Random().nextInt(180);
     }
 
