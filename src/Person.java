@@ -9,8 +9,8 @@ public class Person {
     double angleDeg;
 
     Person(Frame frame){
-        x = new Random().nextInt((int) (frame.currentScale * frame.getWidth())) + frame.x0;
-        y = new Random().nextInt(frame.railBlock.height);
+        x = new Random().nextInt(frame.mapBlock.width);
+        y = new Random().nextInt(frame.mapBlock.height);
         angleDeg = new Random().nextInt(180);
     }
 

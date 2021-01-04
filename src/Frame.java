@@ -106,7 +106,7 @@ public class Frame extends JFrame implements MouseWheelListener {
                 person.x += Math.cos(Math.toRadians(person.angleDeg)) * person.speed;
                 person.y += Math.sin(Math.toRadians(person.angleDeg)) * person.speed;
 
-                if (person.x < 400 || person.x > 400 + 2000 * 2.7 || person.y < 0 || person.y > railBlock.height){
+                if (person.x < 0 || person.x > mapBlock.width || person.y < 0 || person.y > mapBlock.height){
                     peopleToBeRemoved.add(person);
                 }
 
