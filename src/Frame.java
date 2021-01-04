@@ -1,11 +1,8 @@
-import javafx.beans.binding.MapBinding;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferStrategy;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public class Frame extends JFrame implements MouseWheelListener {
@@ -35,9 +32,9 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         currentScale = targetScale = 2;
         mapBlock = new MapBlock();
-        x0 = 1500;
-        y0 = (int) (mapBlock.height - this.getHeight() * currentScale);
-        railBlock = new RailBlock(x0 + getWidth() / 2, 6000);
+        x0 = 500;
+        y0 = (int) (mapBlock.height - this.getHeight() * currentScale); // 1000
+        railBlock = new RailBlock((int) (x0 + this.getWidth() / 2 * currentScale - 50), (int) (y0 + this.getHeight() * currentScale - 100)); // x = 1450, y = 2900
         tram = new Tram(railBlock);
         prevTime = System.currentTimeMillis();
 
@@ -64,31 +61,30 @@ public class Frame extends JFrame implements MouseWheelListener {
         else if (currentScale < targetScale - 0.05)
             currentScale += scaleSpeed;
 
-        for (int m = 0; m < 100; m++)
-            for(int n = 0; n < 100; n++) {
-                if ((m % 2 == 0 && n % 2 != 0) || (m % 2 != 0 && n % 2 == 0))
+        for (int m = 0; m < mapBlock.height; m += 60)
+            for(int n = 0; n < mapBlock.width; n += 60) {
+                if ((m % 120 == 0 && n % 120 != 0) || (m % 120 != 0 && n % 120 == 0))
                     g.setColor(new Color(161, 208, 73));
                 else g.setColor(new Color(169, 214, 81));
 
-                g.fillRect((int) ((m * 60 - x0) / currentScale), (int) ((n * 60 - y0) / currentScale),
-                        ((int) (((m+1) * 60 - x0) / currentScale)-(int) ((m * 60 - x0) / currentScale)),
-                        ((int) ( ((n+1) * 60 - y0) / currentScale)-(int) ((n * 60 - y0) / currentScale)));
+//                g.fillRect((int) ((m * 60 - x0) / currentScale), (int) ((n * 60 - y0) / currentScale),
+//                        ((int) (((m+1) * 60 - x0) / currentScale)-(int) ((m * 60 - x0) / currentScale)),
+//                        ((int) ( ((n+1) * 60 - y0) / currentScale)-(int) ((n * 60 - y0) / currentScale)));
+                g.fillRect((int) ((n - x0) / currentScale), (int) ((m - y0) / currentScale), 60, 60);
             }
 
         // рельса
         g.setColor(Color.black);
-        g.drawRect((int) ((railBlock.x - x0) / currentScale),(int) ((railBlock.y - y0) / currentScale),(int) (railBlock.width / currentScale), (int)(railBlock.height / currentScale));
-        g.drawLine(railBlock.x - x0, (int) ((railBlock.y - y0) / currentScale), railBlock.x - x0, (int) ((railBlock.y - y0) / currentScale) + railBlock.height);
-        System.out.println((railBlock.x - x0) / currentScale);
-        System.out.println(railBlock.x - x0);
-        System.out.println((int) ((railBlock.y - y0) / currentScale));
-        System.out.println(y0 + this.getHeight());
+        g.drawLine((int) ((railBlock.x - x0) / currentScale), (int) ((railBlock.y - y0) / currentScale), (int) ((railBlock.x - x0) / currentScale), (int) ((railBlock.y - y0 + railBlock.height) / currentScale));
+        g.drawLine((int) ((railBlock.x - x0 + railBlock.width) / currentScale), (int) ((railBlock.y - y0) / currentScale), (int) ((railBlock.x - x0 + railBlock.width) / currentScale), (int) ((railBlock.y - y0 + railBlock.height) / currentScale));
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+
         // трамвайка
         g.setColor(Color.cyan);
         g.fillRect((int) ((tram.x - x0) / currentScale),(int) ((tram.y - y0) / currentScale),(int) (tram.width / currentScale), (int) (tram.height / currentScale));
@@ -96,14 +92,9 @@ public class Frame extends JFrame implements MouseWheelListener {
         dt = System.currentTimeMillis() - prevTime;
 
         tram.y -= speed;
-        if (tram.y <= - tram.height){
-            tram.y = railBlock.height;
-            y0 = (int) (railBlock.height - this.getHeight() * currentScale);
-        }
-        else if (y0 > railBlock.y && tram.y < railBlock.height - this.getHeight() / 2 * currentScale)
-            y0 = (int) (tram.y - this.getHeight() / 2 * currentScale);
-        else if (tram.y > railBlock.height / 2) y0 = (int) (railBlock.height - this.getHeight() * currentScale);
 
+        if (tram.y < y0 + getHeight() / 2 * currentScale - tram.height / 2)
+            y0 -= speed;
         x0 = (int) (tram.x - this.getWidth() / 2 * currentScale + railBlock.width / 2);
 
         // Людишки(бедолаги)

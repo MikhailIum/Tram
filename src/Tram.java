@@ -6,6 +6,6 @@ public class Tram {
 
     public Tram(RailBlock railBlock) {
         this.x = railBlock.x - 25;
-        this.y = railBlock.y + height;
+        this.y = railBlock.y - (height - railBlock.height);
     }
 }
