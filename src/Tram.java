@@ -1,8 +1,8 @@
 public class Tram {
     int x;
     int y;
-    int width = 150;
-    int height = 200;
+    int width = 2;
+    int height = 35;
 
     public Tram(RailBlock railBlock) {
         this.x = railBlock.x - 25;

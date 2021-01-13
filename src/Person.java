@@ -3,9 +3,9 @@ import java.util.Random;
 public class Person {
     int x;
     int y;
-    int height = 100;
-    int width = 100;
-    double speed = 2;
+    int height = 1;
+    int width = 1;
+    double speed = 1.4;
     double angleDeg;
 
     Person(Frame frame){

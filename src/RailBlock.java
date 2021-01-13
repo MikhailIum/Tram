@@ -1,8 +1,8 @@
 public class RailBlock {
     int x;
     int y;
-    int height = 100;
-    int width = 100;
+    int height = 10;
+    int width = 2;
 
     RailBlock(int x, int y){
         this.x = x;

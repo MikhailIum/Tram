@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Frame extends JFrame implements MouseWheelListener {
 
-    int speed = 10;
+    int speed = 8; // 30 km/h
 
     double scaleSpeed = 0.003;
     int x0;
@@ -32,9 +32,9 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         currentScale = targetScale = 2;
         mapBlock = new MapBlock();
-        x0 = 500;
-        y0 = (int) (mapBlock.height - this.getHeight() * currentScale); // 1000
-        railBlock = new RailBlock((int) (x0 + this.getWidth() / 2 * currentScale - 50), (int) (y0 + this.getHeight() * currentScale - 100)); // x = 1450, y = 2900
+        x0 = 500; // 500 m
+        y0 = (int) (mapBlock.height - this.getHeight() * currentScale); // 1000 m
+        railBlock = new RailBlock((int) (x0 + this.getWidth() / 2 * currentScale - 2), (int) (y0 + this.getHeight() * currentScale - 10)); // x = 1498 m, y = 2990 m
         tram = new Tram(railBlock);
         prevTime = System.currentTimeMillis();
 
@@ -61,16 +61,13 @@ public class Frame extends JFrame implements MouseWheelListener {
         else if (currentScale < targetScale - 0.05)
             currentScale += scaleSpeed;
 
-        for (int m = 0; m < mapBlock.height; m += 60)
-            for(int n = 0; n < mapBlock.width; n += 60) {
-                if ((m % 120 == 0 && n % 120 != 0) || (m % 120 != 0 && n % 120 == 0))
+        for (int m = 0; m < mapBlock.height; m += 10)
+            for(int n = 0; n < mapBlock.width; n += 10) {
+                if ((m % 20 == 0 && n % 20 != 0) || (m % 20 != 0 && n % 20 == 0))
                     g.setColor(new Color(161, 208, 73));
                 else g.setColor(new Color(169, 214, 81));
 
-//                g.fillRect((int) ((m * 60 - x0) / currentScale), (int) ((n * 60 - y0) / currentScale),
-//                        ((int) (((m+1) * 60 - x0) / currentScale)-(int) ((m * 60 - x0) / currentScale)),
-//                        ((int) ( ((n+1) * 60 - y0) / currentScale)-(int) ((n * 60 - y0) / currentScale)));
-                g.fillRect((int) ((n - x0) / currentScale), (int) ((m - y0) / currentScale), 60, 60);
+                g.fillRect((int) ((n - x0) / currentScale), (int) ((m - y0) / currentScale), 10, 10);
             }
 
         // рельса
