@@ -1,6 +1,6 @@
 public class Tram {
     int x;
-    int y;
+    double y;
     int width = 2;
     int height = 35;
 

@@ -1,12 +1,13 @@
 import java.util.Random;
 
 public class Person {
-    int x;
-    int y;
+    double x;
+    double y;
     int height = 1;
     int width = 1;
     double speed = 1.4;
     double angleDeg;
+    double acceleration = 0;
 
     Person(Frame frame){
         x = new Random().nextInt(frame.mapBlock.width);

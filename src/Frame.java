@@ -7,11 +7,13 @@ import java.util.ArrayList;
 
 public class Frame extends JFrame implements MouseWheelListener {
 
-    int speed = 8; // 30 km/h
+    double speed = 0;
+    double acceleration = 2; // m / sec ^ 2
+
 
     double scaleSpeed = 0.003;
-    int x0;
-    int y0;
+    double x0;
+    double y0;
     RailBlock railBlock;
     Tram tram;
     MapBlock mapBlock;
@@ -30,11 +32,11 @@ public class Frame extends JFrame implements MouseWheelListener {
         this.setLocation(500, 50);
         this.setVisible(true);
 
-        currentScale = targetScale = 2;
+        currentScale = targetScale = 20;
         mapBlock = new MapBlock();
-        x0 = 500; // 500 m
-        y0 = (int) (mapBlock.height - this.getHeight() * currentScale); // 1000 m
-        railBlock = new RailBlock((int) (x0 + this.getWidth() / 2 * currentScale - 2), (int) (y0 + this.getHeight() * currentScale - 10)); // x = 1498 m, y = 2990 m
+        x0 = 75; // 75 m
+        y0 = (int) (mapBlock.height - this.getHeight() / currentScale); // 150 m
+        railBlock = new RailBlock((int) (x0 + this.getWidth() / 2 / currentScale - 2), (int) (y0 + this.getHeight() / currentScale - 10)); // x = 98 m, y = 190 m
         tram = new Tram(railBlock);
         prevTime = System.currentTimeMillis();
 
@@ -61,47 +63,46 @@ public class Frame extends JFrame implements MouseWheelListener {
         else if (currentScale < targetScale - 0.05)
             currentScale += scaleSpeed;
 
-        for (int m = 0; m < mapBlock.height; m += 10)
-            for(int n = 0; n < mapBlock.width; n += 10) {
-                if ((m % 20 == 0 && n % 20 != 0) || (m % 20 != 0 && n % 20 == 0))
+        for (int m = 0; m < mapBlock.height; m += 5)
+            for(int n = 0; n < mapBlock.width; n += 5) {
+                if ((m % 10 == 0 && n % 10 != 0) || (m % 10 != 0 && n % 10 == 0))
                     g.setColor(new Color(161, 208, 73));
                 else g.setColor(new Color(169, 214, 81));
 
-                g.fillRect((int) ((n - x0) / currentScale), (int) ((m - y0) / currentScale), 10, 10);
+                g.fillRect((int) ((n - x0) * currentScale), (int) ((m - y0) * currentScale), (int) (5 * currentScale), (int) (5 * currentScale));
             }
 
         // рельса
         g.setColor(Color.black);
-        g.drawLine((int) ((railBlock.x - x0) / currentScale), (int) ((railBlock.y - y0) / currentScale), (int) ((railBlock.x - x0) / currentScale), (int) ((railBlock.y - y0 + railBlock.height) / currentScale));
-        g.drawLine((int) ((railBlock.x - x0 + railBlock.width) / currentScale), (int) ((railBlock.y - y0) / currentScale), (int) ((railBlock.x - x0 + railBlock.width) / currentScale), (int) ((railBlock.y - y0 + railBlock.height) / currentScale));
+        g.drawLine((int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0 + railBlock.height) * currentScale));
+        g.drawLine((int) ((railBlock.x - x0 + railBlock.width) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0 + railBlock.width) * currentScale), (int) ((railBlock.y - y0 + railBlock.height) * currentScale));
 
 
-//        try {
-//            Thread.sleep(1000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
 
         // трамвайка
         g.setColor(Color.cyan);
-        g.fillRect((int) ((tram.x - x0) / currentScale),(int) ((tram.y - y0) / currentScale),(int) (tram.width / currentScale), (int) (tram.height / currentScale));
+        g.fillRect((int) ((tram.x - x0) * currentScale),(int) ((tram.y - y0) * currentScale),(int) (tram.width * currentScale), (int) (tram.height * currentScale));
 
         dt = System.currentTimeMillis() - prevTime;
 
-        tram.y -= speed;
 
-        if (tram.y < y0 + getHeight() / 2 * currentScale - tram.height / 2)
-            y0 -= speed;
-        x0 = (int) (tram.x - this.getWidth() / 2 * currentScale + railBlock.width / 2);
+        tram.y -= speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2;
+        if (speed <= 17) speed += acceleration * dt / 1000;
+
+
+        y0 -= speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2;
+        x0 = (int) (tram.x - this.getWidth() / 2 / currentScale + railBlock.width / 2);
 
         // Людишки(бедолаги)
         synchronized (people) {
             for (Person person: people){
                 person.checkCollision(this);
 
-                g.fillOval((int) ((person.x - x0) / currentScale), (int) ((person.y - y0) / currentScale), (int) (person.width / currentScale), (int) (person.height / currentScale));
-                person.x += Math.cos(Math.toRadians(person.angleDeg)) * person.speed;
-                person.y += Math.sin(Math.toRadians(person.angleDeg)) * person.speed;
+                g.fillOval((int) ((person.x - x0) * currentScale), (int) ((person.y - y0) * currentScale), (int) (person.width * currentScale), (int) (person.height * currentScale));
+                person.x += dt * 1.0 / 1000 * Math.cos(Math.toRadians(person.angleDeg)) * person.speed + person.acceleration * dt * dt / 1000 / 1000 / 2;
+                person.y += dt * 1.0 / 1000 * Math.sin(Math.toRadians(person.angleDeg)) * person.speed + person.acceleration * dt * dt / 1000 / 1000 / 2;
+
+
 
                 if (person.x < 0 || person.x > mapBlock.width || person.y < 0 || person.y > mapBlock.height){
                     peopleToBeRemoved.add(person);

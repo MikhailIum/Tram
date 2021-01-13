@@ -1,4 +1,4 @@
 public class MapBlock {
-    int height = 30000;
-    int width = 3000;
+    int height = 200;
+    int width = 200;
 }
