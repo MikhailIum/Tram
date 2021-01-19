@@ -4,6 +4,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Frame extends JFrame implements MouseWheelListener {
 
@@ -14,15 +15,16 @@ public class Frame extends JFrame implements MouseWheelListener {
     double scaleSpeed = 0.03;
     double x0;
     double y0;
-    RailBlock railBlock;
     Tram tram;
     MapBlock mapBlock;
     double currentScale;
     double targetScale;
     long prevTime;
     long dt;
+    double dy = 0;
     ArrayList<Person> people;
     ArrayList<Person> peopleToBeRemoved = new ArrayList<>();
+    LinkedList<RailBlock> rail = new LinkedList<>();
 
 
     Frame(){
@@ -36,12 +38,14 @@ public class Frame extends JFrame implements MouseWheelListener {
         mapBlock = new MapBlock();
         x0 = 75; // 75 m
         y0 = (int) (mapBlock.height - this.getHeight() / currentScale); // 150 m
-        railBlock = new RailBlock((int) (x0 + this.getWidth() / 2 / currentScale - 2), (int) (y0 + this.getHeight() / currentScale - 10)); // x = 98 m, y = 190 m
-        tram = new Tram(railBlock);
+        rail.add (new RailBlock((int) (x0 + this.getWidth() / 2 / currentScale - 2), (int) (y0 + this.getHeight() / currentScale - 5))); // x = 98 m, y = 195 m
+        tram = new Tram(rail);
         prevTime = System.currentTimeMillis();
 
         people = new ArrayList<>();
 
+        for (int i = 0; i < 15; i++)
+            rail.add(new RailBlock(rail.getFirst().x, rail.getLast().y - rail.getLast().height));
 
         addMouseWheelListener(this);
         createBufferStrategy(2);
@@ -58,8 +62,20 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         super.paint(g);
 
+        dy += y0 - (tram.y - this.getHeight() / 2.0 / currentScale);
+
+
         y0 = tram.y - this.getHeight() / 2.0 / currentScale;
-        x0 = (tram.x - this.getWidth() / 2.0 / currentScale + railBlock.width / 2.0);
+        x0 = (tram.x - this.getWidth() / 2.0 / currentScale + rail.getLast().width / 2.0);
+
+        if (dy > rail.getFirst().height * 5){
+            rail.removeFirst();
+            for (int i = 0; i < 5; i++)
+                rail.add(new RailBlock(rail.getFirst().x, rail.getLast().y - rail.getLast().height));
+            dy = 0;
+        }
+
+
 
         if(currentScale > targetScale + scaleSpeed)
             currentScale -= scaleSpeed;
@@ -81,10 +97,14 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         // рельса
         g.setColor(Color.black);
-        g.drawLine((int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0 + railBlock.height) * currentScale));
-        g.drawLine((int) ((railBlock.x - x0 + railBlock.width) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0 + railBlock.width) * currentScale), (int) ((railBlock.y - y0 + railBlock.height) * currentScale));
+//        g.drawLine((int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0 + railBlock.height) * currentScale));
+//        g.drawLine((int) ((railBlock.x - x0 + railBlock.width) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0 + railBlock.width) * currentScale), (int) ((railBlock.y - y0 + railBlock.height) * currentScale));
 
 
+        for (RailBlock railBlock: rail){
+            g.drawLine((int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0 + railBlock.height) * currentScale));
+            g.drawLine((int) ((railBlock.x - x0 + railBlock.width) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0 + railBlock.width) * currentScale), (int) ((railBlock.y - y0 + railBlock.height) * currentScale));
+        }
 
         // трамвайка
         g.setColor(Color.cyan);
