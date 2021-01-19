@@ -58,10 +58,14 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         super.paint(g);
 
-        if(currentScale > targetScale + 0.05)
+        y0 -= speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2;
+        x0 = (tram.x - this.getWidth() / 2.0 / currentScale + railBlock.width / 2.0);
+
+        if(currentScale > targetScale + scaleSpeed)
             currentScale -= scaleSpeed;
-        else if (currentScale < targetScale - 0.05)
+        else if (currentScale < targetScale - scaleSpeed)
             currentScale += scaleSpeed;
+
 
         for (int m = 0; m < mapBlock.height; m += 5)
             for(int n = 0; n < mapBlock.width; n += 5) {
@@ -69,7 +73,10 @@ public class Frame extends JFrame implements MouseWheelListener {
                     g.setColor(new Color(161, 208, 73));
                 else g.setColor(new Color(169, 214, 81));
 
-                g.fillRect((int) ((n - x0) * currentScale), (int) ((m - y0) * currentScale), (int) (5 * currentScale), (int) (5 * currentScale));
+                int xStart = (int) ((n - x0) * currentScale);
+                int yStart = (int) ((m - y0) * currentScale);
+
+                g.fillRect(xStart, yStart , (int) ((n + 5 - x0) * currentScale) - xStart,(int) ((m + 5 - x0) * currentScale) - yStart);
             }
 
         // рельса
@@ -81,7 +88,17 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         // трамвайка
         g.setColor(Color.cyan);
-        g.fillRect((int) ((tram.x - x0) * currentScale),(int) ((tram.y - y0) * currentScale),(int) (tram.width * currentScale), (int) (tram.height * currentScale));
+        {
+            double startX = ((tram.x - x0) * currentScale);
+            double startY = ((tram.y - y0) * currentScale);
+            double widthX = (tram.width * currentScale);
+            double heightY = (tram.height * currentScale);
+            int x1 = (int) startX;
+            int y1 = (int) startY;
+            int x2 = (int) (startX + widthX);
+            int y2 = (int) (startY + heightY);
+            g.fillRect(x1, y1, x2 - x1, y2 - y1);
+        }
 
         dt = System.currentTimeMillis() - prevTime;
 
@@ -89,9 +106,6 @@ public class Frame extends JFrame implements MouseWheelListener {
         tram.y -= speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2;
         if (speed <= 17) speed += acceleration * dt / 1000;
 
-
-        y0 -= speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2;
-        x0 = (int) (tram.x - this.getWidth() / 2 / currentScale + railBlock.width / 2);
 
         // Людишки(бедолаги)
         synchronized (people) {
@@ -128,11 +142,13 @@ public class Frame extends JFrame implements MouseWheelListener {
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL){
-            if (targetScale <= 2.7) targetScale += e.getWheelRotation() * e.getScrollAmount() / 100.0;
-            else targetScale = 2.7;
-            if (targetScale >= 1.3) targetScale += e.getWheelRotation() * e.getScrollAmount() / 100.0;
-            else targetScale = 1.3;
-            targetScale = Math.round(targetScale * 100.0) / 100.0;
+            //TODO remove
+            targetScale -= 1;
+//            if (targetScale <= 2.7) targetScale += e.getWheelRotation() * e.getScrollAmount() / 100.0;
+//            else targetScale = 2.7;
+//            if (targetScale >= 1.3) targetScale += e.getWheelRotation() * e.getScrollAmount() / 100.0;
+//            else targetScale = 1.3;
+//            targetScale = Math.round(targetScale * 100.0) / 100.0;
         }
     }
 }
