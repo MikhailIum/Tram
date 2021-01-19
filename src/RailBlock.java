@@ -2,7 +2,7 @@ public class RailBlock {
     int x;
     int y;
     int height = 10;
-    int width = 2;
+    double width = 1.7;
 
     RailBlock(int x, int y){
         this.x = x;

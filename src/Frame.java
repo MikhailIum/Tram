@@ -11,7 +11,7 @@ public class Frame extends JFrame implements MouseWheelListener {
     double acceleration = 2; // m / sec ^ 2
 
 
-    double scaleSpeed = 0.003;
+    double scaleSpeed = 0.03;
     double x0;
     double y0;
     RailBlock railBlock;
@@ -58,7 +58,7 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         super.paint(g);
 
-        y0 -= speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2;
+        y0 = tram.y - this.getHeight() / 2.0 / currentScale;
         x0 = (tram.x - this.getWidth() / 2.0 / currentScale + railBlock.width / 2.0);
 
         if(currentScale > targetScale + scaleSpeed)
@@ -142,13 +142,11 @@ public class Frame extends JFrame implements MouseWheelListener {
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL){
-            //TODO remove
-            targetScale -= 1;
-//            if (targetScale <= 2.7) targetScale += e.getWheelRotation() * e.getScrollAmount() / 100.0;
-//            else targetScale = 2.7;
-//            if (targetScale >= 1.3) targetScale += e.getWheelRotation() * e.getScrollAmount() / 100.0;
-//            else targetScale = 1.3;
-//            targetScale = Math.round(targetScale * 100.0) / 100.0;
+            if (targetScale <= 30) targetScale -= e.getWheelRotation() * e.getScrollAmount() / 100.0;
+            else targetScale = 30;
+            if (targetScale >= 10) targetScale -= e.getWheelRotation() * e.getScrollAmount() / 100.0;
+            else targetScale = 10;
+            targetScale = Math.round(targetScale * 100.0) / 100.0;
         }
     }
 }
