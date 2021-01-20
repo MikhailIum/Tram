@@ -45,7 +45,7 @@ public class Frame extends JFrame implements MouseWheelListener {
         people = new ArrayList<>();
 
         for (int i = 0; i < 15; i++)
-            rail.add(new RailBlock(rail.getFirst().x, rail.getLast().y - rail.getLast().height));
+            rail.add(new RailBlock(rail.getFirst().x, rail.getLast().y - rail.getLast().length));
 
         addMouseWheelListener(this);
         createBufferStrategy(2);
@@ -68,10 +68,10 @@ public class Frame extends JFrame implements MouseWheelListener {
         y0 = tram.y - this.getHeight() / 2.0 / currentScale;
         x0 = (tram.x - this.getWidth() / 2.0 / currentScale + rail.getLast().width / 2.0);
 
-        if (dy > rail.getFirst().height * 5){
+        if (dy > rail.getFirst().length * 5){
             rail.removeFirst();
             for (int i = 0; i < 5; i++)
-                rail.add(new RailBlock(rail.getFirst().x, rail.getLast().y - rail.getLast().height));
+                rail.add(new RailBlock(rail.getFirst().x, rail.getLast().y - rail.getLast().length));
             dy = 0;
         }
 
@@ -97,13 +97,10 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         // рельса
         g.setColor(Color.black);
-//        g.drawLine((int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0 + railBlock.height) * currentScale));
-//        g.drawLine((int) ((railBlock.x - x0 + railBlock.width) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0 + railBlock.width) * currentScale), (int) ((railBlock.y - y0 + railBlock.height) * currentScale));
-
 
         for (RailBlock railBlock: rail){
-            g.drawLine((int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0 + railBlock.height) * currentScale));
-            g.drawLine((int) ((railBlock.x - x0 + railBlock.width) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0 + railBlock.width) * currentScale), (int) ((railBlock.y - y0 + railBlock.height) * currentScale));
+            g.drawLine((int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0 + railBlock.length) * currentScale));
+            g.drawLine((int) ((railBlock.x - x0 + railBlock.width) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0 + railBlock.width) * currentScale), (int) ((railBlock.y - y0 + railBlock.length) * currentScale));
         }
 
         // трамвайка
