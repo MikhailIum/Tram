@@ -45,12 +45,13 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         people = new ArrayList<>();
 
+        Random  r = new Random(454545);
         for (int i = 0; i < 15; i++)
         {
-            int x = new Random().nextInt(2);
-            if (x == 1)
-                railBuilder.move();
-            else railBuilder.rotate(new Random().nextBoolean());
+            int x = r.nextInt(2);
+            //if (x == 1)
+                //railBuilder.move();
+            /*else*/ railBuilder.rotate(/*new Random().nextBoolean()*/ true);
         }
         addMouseWheelListener(this);
         createBufferStrategy(2);
@@ -107,11 +108,11 @@ public class Frame extends JFrame implements MouseWheelListener {
         for (RailBlock railBlock: railBuilder.rail){
             if (railBlock.direction.dx == 0) {
                 g.drawLine((int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0 + RailBlock.length) * currentScale));
-                g.drawLine((int) ((railBlock.x - x0 + RailBlock.width) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0 + RailBlock.width) * currentScale), (int) ((railBlock.y - y0 + RailBlock.length) * currentScale));
+                g.drawLine((int) ((railBlock.x - x0 + RailBlock.width) * currentScale) - 1, (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0 + RailBlock.width) * currentScale) - 1, (int) ((railBlock.y - y0 + RailBlock.length) * currentScale));
             }
             else {
-                g.drawArc((int) (railBlock.x / currentScale), (int) (railBlock.y / currentScale), (int) (RailBlock.width / currentScale), (int) (RailBlock.length / currentScale), railBlock.ang1, railBlock.ang2);
-                g.drawArc((int) (railBlock.x / currentScale), (int) (railBlock.y / currentScale), (int) (RailBuilder.R / currentScale), (int) (RailBuilder.R / currentScale), railBlock.ang1, railBlock.ang2);
+                g.drawArc(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0), toPixels(RailBlock.width), toPixels(RailBlock.length), railBlock.ang1, railBlock.ang2);
+                g.drawArc(toPixels(railBlock.x - x0 + RailBuilder.R), toPixels(railBlock.y - y0), toPixels(RailBuilder.R), toPixels(RailBuilder.R), railBlock.ang1, railBlock.ang2);
             }
         }
 
@@ -167,6 +168,16 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         repaint();
     }
+
+    int toPixels(double xMeters){
+        return (int) (xMeters * currentScale);
+    }
+
+    int toMeters(int xPixels){
+        return (int) (xPixels / currentScale + x0);
+    }
+
+
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {

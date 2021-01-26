@@ -25,48 +25,48 @@ public class RailBuilder {
         if (direction == Direction.UP){
             if (isRight){
                 x += RailBlock.width + R;
-                rail.add(new RailBlock(x, y, direction, 180, 90));
                 direction = Direction.RIGHT;
+                rail.add(new RailBlock(x, y, direction, 180, 90));
             }
             else {
                 x -= R;
-                rail.add(new RailBlock(x, y, direction, 0, 90));
                 direction = Direction.LEFT;
+                rail.add(new RailBlock(x, y, direction, 0, 90));
             }
         }
         else if (direction == Direction.DOWN){
             if(isRight) {
                 x -= RailBlock.width + R;
-                rail.add(new RailBlock(x, y, direction, 0, -90));
                 direction = Direction.LEFT;
+                rail.add(new RailBlock(x, y, direction, 0, -90));
             }
             else {
                 x += R;
-                rail.add(new RailBlock(x, y, direction, 180, -90));
                 direction = Direction.RIGHT;
+                rail.add(new RailBlock(x, y, direction, 180, -90));
             }
         }
         else if (direction == Direction.RIGHT) {
             if (isRight) {
                 y -= RailBlock.width + R;
-                rail.add(new RailBlock(x, y, direction, 90, 0));
                 direction = Direction.DOWN;
+                rail.add(new RailBlock(x, y, direction, 90, 0));
             } else {
                 y -= R;
-                rail.add(new RailBlock(x, y, direction, -90, 0));
                 direction = Direction.UP;
+                rail.add(new RailBlock(x, y, direction, -90, 0));
             }
         }
         else {
             if(isRight) {
                 y -= RailBlock.width + R;
-                rail.add(new RailBlock(x, y, direction, -90, 180));
                 direction = Direction.UP;
+                rail.add(new RailBlock(x, y, direction, -90, 180));
             }
             else {
                 y += R;
-                rail.add(new RailBlock(x, y, direction, 90, 180));
                 direction = Direction.DOWN;
+                rail.add(new RailBlock(x, y, direction, 90, 180));
             }
         }
 
