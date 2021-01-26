@@ -3,7 +3,7 @@ import java.util.LinkedList;
 public class RailBuilder {
     int x;
     int y;
-    int R = 5;
+    static final int R = 5;
     Direction direction;
     LinkedList<RailBlock> rail = new LinkedList<>();
 
@@ -11,6 +11,8 @@ public class RailBuilder {
         this.x = x;
         this.y = y;
         this.direction = direction;
+        this.move();
+        System.out.println("x = " + rail.getFirst().x + ", y = " + rail.getFirst().y + ", direction = " + rail.getFirst().direction);
     }
 
     void move(){

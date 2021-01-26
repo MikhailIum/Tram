@@ -7,7 +7,7 @@ public class Tram {
     int height = 35;
 
     public Tram(LinkedList<RailBlock> rail) {
-        this.x = rail.getFirst().x - 0.15;
-        this.y = rail.getFirst().y + rail.getFirst().height - height;
+        this.x = rail.getFirst().x;
+        this.y = rail.getFirst().y + RailBlock.length - height;
     }
 }

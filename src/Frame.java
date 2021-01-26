@@ -5,6 +5,7 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Random;
 
 public class Frame extends JFrame implements MouseWheelListener {
 
@@ -24,7 +25,7 @@ public class Frame extends JFrame implements MouseWheelListener {
     double dy = 0;
     ArrayList<Person> people;
     ArrayList<Person> peopleToBeRemoved = new ArrayList<>();
-    LinkedList<RailBlock> rail = new LinkedList<>();
+    RailBuilder railBuilder;
 
 
     Frame(){
@@ -38,15 +39,19 @@ public class Frame extends JFrame implements MouseWheelListener {
         mapBlock = new MapBlock();
         x0 = 75; // 75 m
         y0 = (int) (mapBlock.height - this.getHeight() / currentScale); // 150 m
-        rail.add (new RailBlock((int) (x0 + this.getWidth() / 2 / currentScale - 2), (int) (y0 + this.getHeight() / currentScale - 5))); // x = 98 m, y = 195 m
-        tram = new Tram(rail);
+        railBuilder = new RailBuilder((int) (x0 + this.getWidth() / 2 / currentScale - 2), (int) (y0 + this.getHeight() / currentScale - 5), Direction.UP); // x = 98 m, y = 195 m
+        tram = new Tram(railBuilder.rail);
         prevTime = System.currentTimeMillis();
 
         people = new ArrayList<>();
 
         for (int i = 0; i < 15; i++)
-            rail.add(new RailBlock(rail.getFirst().x, rail.getLast().y - rail.getLast().length));
-
+        {
+            int x = new Random().nextInt(2);
+            if (x == 1)
+                railBuilder.move();
+            else railBuilder.rotate(new Random().nextBoolean());
+        }
         addMouseWheelListener(this);
         createBufferStrategy(2);
     }
@@ -66,14 +71,15 @@ public class Frame extends JFrame implements MouseWheelListener {
 
 
         y0 = tram.y - this.getHeight() / 2.0 / currentScale;
-        x0 = (tram.x - this.getWidth() / 2.0 / currentScale + rail.getLast().width / 2.0);
+        x0 = (tram.x - this.getWidth() / 2.0 / currentScale + RailBlock.width / 2.0);
 
-        if (dy > rail.getFirst().length * 5){
-            rail.removeFirst();
-            for (int i = 0; i < 5; i++)
-                rail.add(new RailBlock(rail.getFirst().x, rail.getLast().y - rail.getLast().length));
-            dy = 0;
-        }
+
+//        if (dy > RailBlock.length * 5){
+//            railBuilder.rail.removeFirst();
+//            for (int i = 0; i < 5; i++)
+//                railBuilder.move();
+//            dy = 0;
+//        }
 
 
 
@@ -98,9 +104,15 @@ public class Frame extends JFrame implements MouseWheelListener {
         // рельса
         g.setColor(Color.black);
 
-        for (RailBlock railBlock: rail){
-            g.drawLine((int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0 + railBlock.length) * currentScale));
-            g.drawLine((int) ((railBlock.x - x0 + railBlock.width) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0 + railBlock.width) * currentScale), (int) ((railBlock.y - y0 + railBlock.length) * currentScale));
+        for (RailBlock railBlock: railBuilder.rail){
+            if (railBlock.direction.dx == 0) {
+                g.drawLine((int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0 + RailBlock.length) * currentScale));
+                g.drawLine((int) ((railBlock.x - x0 + RailBlock.width) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0 + RailBlock.width) * currentScale), (int) ((railBlock.y - y0 + RailBlock.length) * currentScale));
+            }
+            else {
+                g.drawArc((int) (railBlock.x / currentScale), (int) (railBlock.y / currentScale), (int) (RailBlock.width / currentScale), (int) (RailBlock.length / currentScale), railBlock.ang1, railBlock.ang2);
+                g.drawArc((int) (railBlock.x / currentScale), (int) (railBlock.y / currentScale), (int) (RailBuilder.R / currentScale), (int) (RailBuilder.R / currentScale), railBlock.ang1, railBlock.ang2);
+            }
         }
 
         // трамвайка
