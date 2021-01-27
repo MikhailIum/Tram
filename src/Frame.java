@@ -106,7 +106,10 @@ public class Frame extends JFrame implements MouseWheelListener {
         g.setColor(Color.black);
 
         for (RailBlock railBlock: railBuilder.rail){
-            if (railBlock.direction.dx == 0) {
+            g.setColor(Color.red);
+//            g.drawOval((int)(railBlock.x * currentScale), railBlock.y * currentScale, 1, 1);
+            g.setColor(Color.black);
+            if (!railBlock.isRotate) {
                 g.drawLine((int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0 + RailBlock.length) * currentScale));
                 g.drawLine((int) ((railBlock.x - x0 + RailBlock.width) * currentScale) - 1, (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0 + RailBlock.width) * currentScale) - 1, (int) ((railBlock.y - y0 + RailBlock.length) * currentScale));
             }
