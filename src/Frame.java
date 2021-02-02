@@ -107,15 +107,15 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         for (RailBlock railBlock: railBuilder.rail){
             g.setColor(Color.red);
-//            g.drawOval((int)(railBlock.x * currentScale), railBlock.y * currentScale, 1, 1);
+//            g.drawOval((int)(railBlock.x * currentScale), (int) (railBlock.y * currentScale), 1, 1);
             g.setColor(Color.black);
             if (!railBlock.isRotate) {
                 g.drawLine((int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0 + RailBlock.length) * currentScale));
                 g.drawLine((int) ((railBlock.x - x0 + RailBlock.width) * currentScale) - 1, (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0 + RailBlock.width) * currentScale) - 1, (int) ((railBlock.y - y0 + RailBlock.length) * currentScale));
             }
             else {
-                g.drawArc(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0), toPixels(RailBlock.width), toPixels(RailBlock.length), railBlock.ang1, railBlock.ang2);
-                g.drawArc(toPixels(railBlock.x - x0 + RailBuilder.R), toPixels(railBlock.y - y0), toPixels(RailBuilder.R), toPixels(RailBuilder.R), railBlock.ang1, railBlock.ang2);
+                g.drawArc(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0), toPixels(RailBlock.width + RailBuilder.R), toPixels(RailBlock.width + RailBuilder.R), railBlock.ang1, railBlock.ang2);
+                g.drawArc(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0), toPixels(RailBuilder.R), toPixels(RailBuilder.R), railBlock.ang1, railBlock.ang2);
             }
         }
 
@@ -130,7 +130,8 @@ public class Frame extends JFrame implements MouseWheelListener {
             int y1 = (int) startY;
             int x2 = (int) (startX + widthX);
             int y2 = (int) (startY + heightY);
-            g.fillRect(x1, y1, x2 - x1, y2 - y1);
+//            g.fillRect(x1, y1, x2 - x1, y2 - y1);
+            // TODO: вернуть трамвай
         }
 
         dt = System.currentTimeMillis() - prevTime;
@@ -138,6 +139,7 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         tram.y -= speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2;
         if (speed <= 17) speed += acceleration * dt / 1000;
+
 
 
         // Людишки(бедолаги)

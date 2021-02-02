@@ -31,52 +31,52 @@ public class RailBuilder {
                 direction = Direction.RIGHT;
                 xCenter = x + RailBlock.width + R;
                 yCenter = y;
-                x += RailBlock.length + R;
-                y -= RailBlock.length + R;
-                rail.add(new RailBlock(x, y, direction, 180, 90, true, xCenter, y));
+                rail.add(new RailBlock(x, y, direction, 180, 90, true, xCenter, yCenter));
+                x += RailBlock.width + R;
+                y -= RailBlock.width + R;
             }
             else {
                 direction = Direction.LEFT;
                 xCenter = x - R;
                 yCenter = y;
+                rail.add(new RailBlock(x, y, direction, 0, 90, true, xCenter, yCenter));
                 x -= R;
                 y -= R;
-                rail.add(new RailBlock(x, y, direction, 0, 90, true, xCenter, yCenter));
             }
         }
         else if (direction == Direction.DOWN){
             if(isRight) {
                 direction = Direction.LEFT;
-                xCenter = x - RailBlock.width + R;
+                xCenter = x - RailBlock.width - R;
                 yCenter = y;
-                x -= R;
-                y += R;
                 rail.add(new RailBlock(x, y, direction, 0, -90, true, xCenter, yCenter));
+                x -= RailBlock.width + R;
+                y += RailBlock.width + R;
             }
             else {
                 direction = Direction.RIGHT;
                 xCenter = x + R;
                 yCenter = y;
-                x += RailBlock.length + R;
-                y += RailBlock.length + R;
                 rail.add(new RailBlock(x, y, direction, 180, -90, true, xCenter, yCenter));
+                x += R;
+                y += R;
             }
         }
         else if (direction == Direction.RIGHT) {
             if (isRight) {
                 direction = Direction.DOWN;
-                yCenter = y - RailBlock.width + R;
+                yCenter = y + RailBlock.width + R;
                 xCenter = x;
-                x += RailBlock.length + R;
-                y += RailBlock.length + R;
                 rail.add(new RailBlock(x, y, direction, 90, 0, true, xCenter, yCenter));
+                x += RailBlock.width + R;
+                y += RailBlock.width + R;
             } else {
                 direction = Direction.UP;
                 yCenter = y - R;
                 xCenter = x;
+                rail.add(new RailBlock(x, y, direction, -90, 0, true, xCenter, yCenter));
                 x += R;
                 y -= R;
-                rail.add(new RailBlock(x, y, direction, -90, 0, true, xCenter, yCenter));
             }
         }
         else {
@@ -84,17 +84,17 @@ public class RailBuilder {
                 direction = Direction.UP;
                 yCenter = y - RailBlock.width + R;
                 xCenter = x;
-                x -= RailBlock.length + R;
-                y -= RailBlock.length + R;
                 rail.add(new RailBlock(x, y, direction, -90, 180, true, xCenter, yCenter));
+                x -= RailBlock.width + R;
+                y -= RailBlock.width + R;
             }
             else {
                 direction = Direction.DOWN;
-                yCenter = x + R;
+                yCenter = y + R;
                 xCenter = x;
+                rail.add(new RailBlock(x, y, direction, 90, 180, true, xCenter, yCenter));
                 x -= R;
                 y += R;
-                rail.add(new RailBlock(x, y, direction, 90, 180, true, xCenter, yCenter));
             }
         }
 
