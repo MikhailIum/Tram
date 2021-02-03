@@ -1,3 +1,5 @@
+import com.sun.xml.internal.bind.v2.TODO;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseWheelEvent;
@@ -114,6 +116,12 @@ public class Frame extends JFrame implements MouseWheelListener {
                 g.drawLine((int) ((railBlock.x - x0 + RailBlock.width) * currentScale) - 1, (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0 + RailBlock.width) * currentScale) - 1, (int) ((railBlock.y - y0 + RailBlock.length) * currentScale));
             }
             else {
+//                System.out.println(toPixels(railBlock.x - x0));
+//                System.out.println(toPixels(railBlock.y - y0));
+
+//                System.out.println(toPixels(98 - x0));
+//            out.println(currentScale * (195 - y0));
+                //TODO: x,y - upper-left corner;
                 g.drawArc(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0), toPixels(RailBlock.width + RailBuilder.R), toPixels(RailBlock.width + RailBuilder.R), railBlock.ang1, railBlock.ang2);
                 g.drawArc(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0), toPixels(RailBuilder.R), toPixels(RailBuilder.R), railBlock.ang1, railBlock.ang2);
             }
