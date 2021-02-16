@@ -105,7 +105,9 @@ public class Frame extends JFrame implements MouseWheelListener {
         // рельса
         g.setColor(Color.black);
 
-        for (RailBlock railBlock: railBuilder.rail){
+//        for (RailBlock railBlock: railBuilder.rail){
+        {
+            RailBlock railBlock = railBuilder.rail.get(1);
             g.setColor(Color.red);
 //            g.drawOval((int)(railBlock.x * currentScale), (int) (railBlock.y * currentScale), 1, 1);
             g.setColor(Color.black);
@@ -114,8 +116,12 @@ public class Frame extends JFrame implements MouseWheelListener {
                 g.drawLine((int) ((railBlock.x - x0 + RailBlock.width) * currentScale) - 1, (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0 + RailBlock.width) * currentScale) - 1, (int) ((railBlock.y - y0 + RailBlock.length) * currentScale));
             }
             else {
-                g.drawArc(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0), toPixels(RailBlock.width + RailBuilder.R), toPixels(RailBlock.width + RailBuilder.R), railBlock.ang1, railBlock.ang2);
-                g.drawArc(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0), toPixels(RailBuilder.R), toPixels(RailBuilder.R), railBlock.ang1, railBlock.ang2);
+                g.drawArc(toPixels(railBlock.xCenter - RailBlock.width - RailBuilder.R - x0), toPixels(railBlock.yCenter - RailBlock.width - RailBuilder.R - y0 - 30), toPixels(RailBlock.width + RailBuilder.R), toPixels(RailBlock.width + RailBuilder.R), railBlock.ang1, railBlock.ang2);
+                System.out.println(railBlock.ang1);
+                System.out.println(railBlock.ang2);
+                g.drawRect(500, 500, 100, 100);
+                g.drawArc(500,500,100,100,180,90);
+//                g.drawArc(toPixels(railBlock.xCenter - RailBlock.width - RailBuilder.R - x0), toPixels(railBlock.yCenter - RailBlock.width - RailBuilder.R - y0 - 30), toPixels(RailBuilder.R), toPixels(RailBuilder.R), railBlock.ang1, railBlock.ang2);
             }
         }
 
