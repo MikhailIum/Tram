@@ -47,13 +47,13 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         people = new ArrayList<>();
 
-        Random  r = new Random(454545);
+        Random  r = new Random();
         for (int i = 0; i < 15; i++)
         {
             int x = r.nextInt(2);
-            //if (x == 1)
-                //railBuilder.move();
-            /*else*/ railBuilder.rotate(/*new Random().nextBoolean()*/ true);
+            if (x == 1)
+                railBuilder.move();
+            else railBuilder.rotate(new Random().nextBoolean());
         }
         addMouseWheelListener(this);
         createBufferStrategy(2);
@@ -107,25 +107,32 @@ public class Frame extends JFrame implements MouseWheelListener {
         // рельса
         g.setColor(Color.black);
 
-        for (RailBlock railBlock: railBuilder.rail){
-            g.setColor(Color.red);
-//            g.drawOval((int)(railBlock.x * currentScale), (int) (railBlock.y * currentScale), 1, 1);
+         for (RailBlock railBlock: railBuilder.rail){
             g.setColor(Color.black);
             if (!railBlock.isRotate) {
-                g.drawLine((int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0 + RailBlock.length) * currentScale));
-                g.drawLine((int) ((railBlock.x - x0 + RailBlock.width) * currentScale) - 1, (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0 + RailBlock.width) * currentScale) - 1, (int) ((railBlock.y - y0 + RailBlock.length) * currentScale));
+                if (railBlock.direction == Direction.UP) {
+                    g.drawLine(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0 - RailBlock.length), toPixels(railBlock.x - x0), toPixels(railBlock.y - y0));
+                    g.drawLine(toPixels(railBlock.x - x0 + RailBlock.width) - 1, toPixels(railBlock.y - y0 - RailBlock.length), toPixels(railBlock.x - x0 + RailBlock.width) - 1, toPixels(railBlock.y - y0));
+                }
+                else if (railBlock.direction == Direction.DOWN){
+                    g.drawLine(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0), toPixels(railBlock.x - x0), toPixels(railBlock.y - y0 + RailBlock.length));
+                    g.drawLine(toPixels(railBlock.x - x0 - RailBlock.width) - 1, toPixels(railBlock.y - y0), toPixels(railBlock.x - x0 - RailBlock.width) - 1, toPixels(railBlock.y - y0 + RailBlock.length));
+                }
+                else if (railBlock.direction == Direction.RIGHT){
+                    g.drawLine(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0), toPixels(railBlock.x - x0 + RailBlock.length), toPixels(railBlock.y - y0));
+                    g.drawLine(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0 + RailBlock.width) - 1, toPixels(railBlock.x - x0 + RailBlock.length), toPixels(railBlock.y - y0 + RailBlock.width) - 1);
+                }
+                else {
+                    g.drawLine(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0), toPixels(railBlock.x - x0 - RailBlock.length), toPixels(railBlock.y - y0));
+                    g.drawLine(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0 - RailBlock.width) - 1, toPixels(railBlock.x - x0 - RailBlock.length), toPixels(railBlock.y - y0 - RailBlock.width) - 1);
+                }
             }
             else {
-//                System.out.println(toPixels(railBlock.x - x0));
-//                System.out.println(toPixels(railBlock.y - y0));
-
-//                System.out.println(toPixels(98 - x0));
-//            out.println(currentScale * (195 - y0));
-                //TODO: x,y - upper-left corner;
-                g.drawArc(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0), toPixels(RailBlock.width + RailBuilder.R), toPixels(RailBlock.width + RailBuilder.R), railBlock.ang1, railBlock.ang2);
-                g.drawArc(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0), toPixels(RailBuilder.R), toPixels(RailBuilder.R), railBlock.ang1, railBlock.ang2);
+                g.drawArc(toPixels(railBlock.xCenter - RailBlock.width - RailBuilder.R - x0), toPixels(railBlock.yCenter - RailBlock.width - RailBuilder.R - y0), toPixels(RailBlock.width + RailBuilder.R) * 2, toPixels(RailBlock.width + RailBuilder.R) * 2, railBlock.ang1, railBlock.ang2);
+                g.drawArc(toPixels(railBlock.xCenter - RailBuilder.R - x0), toPixels(railBlock.yCenter - RailBuilder.R - y0), toPixels(RailBuilder.R) * 2, toPixels(RailBuilder.R) * 2, railBlock.ang1, railBlock.ang2);
             }
-        }
+
+         }
 
         // трамвайка
         g.setColor(Color.cyan);
