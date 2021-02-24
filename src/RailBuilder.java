@@ -16,13 +16,16 @@ public class RailBuilder {
         this.yCenter = y;
         this.direction = direction;
         this.move();
-        System.out.println("x = " + rail.getFirst().x + ", y = " + rail.getFirst().y + ", direction = " + rail.getFirst().direction);
     }
 
     void move(){
         rail.add(new RailBlock(x, y, direction, false));
         x += direction.dx*RailBlock.length;
         y += direction.dy*RailBlock.length;
+    }
+
+    void deleteFirst(){
+        rail.removeFirst();
     }
 
     void rotate(boolean isRight){
@@ -54,7 +57,7 @@ public class RailBuilder {
         }
         else {
                 direction = Direction.UP;
-                yCenter = y - RailBlock.width + R;
+                yCenter = y - RailBlock.width - R;
                 xCenter = x;
                 rail.add(new RailBlock(x, y, direction, -90, -90, true, xCenter, yCenter));
                 x -= RailBlock.width + R;

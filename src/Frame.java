@@ -38,23 +38,26 @@ public class Frame extends JFrame implements MouseWheelListener {
         this.setVisible(true);
 
         currentScale = targetScale = 20;
-        mapBlock = new MapBlock();
+        mapBlock = new MapBlock(toMeters(getHeight()), toMeters(getWidth()));
         x0 = 75; // 75 m
-        y0 = (int) (mapBlock.height - this.getHeight() / currentScale); // 150 m
+        y0 = mapBlock.height - toMeters(this.getHeight()); // 50 m
         railBuilder = new RailBuilder((int) (x0 + this.getWidth() / 2 / currentScale - 2), (int) (y0 + this.getHeight() / currentScale - 5), Direction.UP); // x = 98 m, y = 195 m
         tram = new Tram(railBuilder.rail);
         prevTime = System.currentTimeMillis();
 
         people = new ArrayList<>();
 
-        Random  r = new Random();
-        for (int i = 0; i < 15; i++)
-        {
-            int x = r.nextInt(2);
-            if (x == 1)
-                railBuilder.move();
-            else railBuilder.rotate(new Random().nextBoolean());
-        }
+//        for (int i = 0; i < 50; i++)
+//        {
+//            boolean isRotate = r.nextBoolean();
+//            if (!isRotate)
+//                railBuilder.move();
+//            else railBuilder.rotate(new Random().nextBoolean());
+//        }
+
+
+
+
         addMouseWheelListener(this);
         createBufferStrategy(2);
     }
@@ -73,9 +76,26 @@ public class Frame extends JFrame implements MouseWheelListener {
         dy += y0 - (tram.y - this.getHeight() / 2.0 / currentScale);
 
 
-        y0 = tram.y - this.getHeight() / 2.0 / currentScale;
+//        System.out.println("tram.y: " + tram.y);
+//        System.out.println("getHeight: " + toMeters(getHeight()));
+        if (tram.y < toMeters(getHeight()) / 2.0) y0 = tram.y - this.getHeight() / 2.0 / currentScale;
         x0 = (tram.x - this.getWidth() / 2.0 / currentScale + RailBlock.width / 2.0);
 
+
+        Random  r = new Random();
+        while (railBuilder.rail.getLast().y > y0 - 2 * RailBlock.length)
+        {
+            boolean isRotate = r.nextBoolean();
+            if (!isRotate)
+                railBuilder.move();
+            else railBuilder.rotate(new Random().nextBoolean());
+        }
+
+        while (railBuilder.rail.getFirst().y > y0 + toMeters(getHeight())){
+            railBuilder.deleteFirst();
+        }
+
+//        System.out.println(railBuilder.rail.size());
 
 //        if (dy > RailBlock.length * 5){
 //            railBuilder.rail.removeFirst();
@@ -98,8 +118,13 @@ public class Frame extends JFrame implements MouseWheelListener {
                     g.setColor(new Color(161, 208, 73));
                 else g.setColor(new Color(169, 214, 81));
 
-                int xStart = (int) ((n - x0) * currentScale);
-                int yStart = (int) ((m - y0) * currentScale);
+                int xStart = toPixels(n - x0);
+                int yStart = toPixels(m - y0);
+
+                System.out.println("xStart: " + xStart);
+                System.out.println("yStart: " + yStart);
+
+
 
                 g.fillRect(xStart, yStart , (int) ((n + 5 - x0) * currentScale) - xStart,(int) ((m + 5 - x0) * currentScale) - yStart);
             }
@@ -194,7 +219,7 @@ public class Frame extends JFrame implements MouseWheelListener {
     }
 
     int toMeters(int xPixels){
-        return (int) (xPixels / currentScale + x0);
+        return (int) (xPixels / currentScale);
     }
 
 
