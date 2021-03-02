@@ -38,9 +38,10 @@ public class Frame extends JFrame implements MouseWheelListener {
         this.setVisible(true);
 
         currentScale = targetScale = 20;
-        mapBlock = new MapBlock(toMeters(getHeight()), toMeters(getWidth()));
-        x0 = 75; // 75 m
-        y0 = mapBlock.height - toMeters(this.getHeight()); // 50 m
+        mapBlock = new MapBlock(toMeters(getHeight()), toMeters(getWidth())); // 50, 50
+        x0 = 0; // 0 m
+        //y0 = mapBlock.height - toMeters(this.getHeight()); // 50 m
+        y0 = 0; // 0 m
         railBuilder = new RailBuilder((int) (x0 + this.getWidth() / 2 / currentScale - 2), (int) (y0 + this.getHeight() / currentScale - 5), Direction.UP); // x = 98 m, y = 195 m
         tram = new Tram(railBuilder.rail);
         prevTime = System.currentTimeMillis();
@@ -79,7 +80,8 @@ public class Frame extends JFrame implements MouseWheelListener {
 //        System.out.println("tram.y: " + tram.y);
 //        System.out.println("getHeight: " + toMeters(getHeight()));
         if (tram.y < toMeters(getHeight()) / 2.0) y0 = tram.y - this.getHeight() / 2.0 / currentScale;
-        x0 = (tram.x - this.getWidth() / 2.0 / currentScale + RailBlock.width / 2.0);
+        x0 = (tram.x - toMeters(this.getWidth()) / 2.0 + RailBlock.width / 2.0);
+        System.out.println(tram.x);
 
 
         Random  r = new Random();
@@ -121,8 +123,8 @@ public class Frame extends JFrame implements MouseWheelListener {
                 int xStart = toPixels(n - x0);
                 int yStart = toPixels(m - y0);
 
-                System.out.println("xStart: " + xStart);
-                System.out.println("yStart: " + yStart);
+//                System.out.println("xStart: " + xStart);
+//                System.out.println("yStart: " + yStart);
 
 
 
