@@ -1,4 +1,9 @@
 public class MapBlock {
-    int height = 200;
-    int width = 200;
+
+    int height;
+    int width;
+    MapBlock(int height, int width){
+        this.height = height;
+        this.width = width;
+    }
 }

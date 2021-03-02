@@ -8,6 +8,6 @@ public class Tram {
 
     public Tram(LinkedList<RailBlock> rail) {
         this.x = rail.getFirst().x;
-        this.y = rail.getFirst().y + RailBlock.length - height;
+        this.y = rail.getFirst().y;
     }
 }

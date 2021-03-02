@@ -1,3 +1,5 @@
+import com.sun.xml.internal.bind.v2.TODO;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseWheelEvent;
@@ -36,23 +38,26 @@ public class Frame extends JFrame implements MouseWheelListener {
         this.setVisible(true);
 
         currentScale = targetScale = 20;
-        mapBlock = new MapBlock();
+        mapBlock = new MapBlock(toMeters(getHeight()), toMeters(getWidth()));
         x0 = 75; // 75 m
-        y0 = (int) (mapBlock.height - this.getHeight() / currentScale); // 150 m
+        y0 = mapBlock.height - toMeters(this.getHeight()); // 50 m
         railBuilder = new RailBuilder((int) (x0 + this.getWidth() / 2 / currentScale - 2), (int) (y0 + this.getHeight() / currentScale - 5), Direction.UP); // x = 98 m, y = 195 m
         tram = new Tram(railBuilder.rail);
         prevTime = System.currentTimeMillis();
 
         people = new ArrayList<>();
 
-        Random  r = new Random(454545);
-        for (int i = 0; i < 15; i++)
-        {
-            int x = r.nextInt(2);
-            //if (x == 1)
-                //railBuilder.move();
-            /*else*/ railBuilder.rotate(/*new Random().nextBoolean()*/ true);
-        }
+//        for (int i = 0; i < 50; i++)
+//        {
+//            boolean isRotate = r.nextBoolean();
+//            if (!isRotate)
+//                railBuilder.move();
+//            else railBuilder.rotate(new Random().nextBoolean());
+//        }
+
+
+
+
         addMouseWheelListener(this);
         createBufferStrategy(2);
     }
@@ -71,9 +76,26 @@ public class Frame extends JFrame implements MouseWheelListener {
         dy += y0 - (tram.y - this.getHeight() / 2.0 / currentScale);
 
 
-        y0 = tram.y - this.getHeight() / 2.0 / currentScale;
+//        System.out.println("tram.y: " + tram.y);
+//        System.out.println("getHeight: " + toMeters(getHeight()));
+        if (tram.y < toMeters(getHeight()) / 2.0) y0 = tram.y - this.getHeight() / 2.0 / currentScale;
         x0 = (tram.x - this.getWidth() / 2.0 / currentScale + RailBlock.width / 2.0);
 
+
+        Random  r = new Random();
+        while (railBuilder.rail.getLast().y > y0 - 2 * RailBlock.length)
+        {
+            boolean isRotate = r.nextBoolean();
+            if (!isRotate)
+                railBuilder.move();
+            else railBuilder.rotate(new Random().nextBoolean());
+        }
+
+        while (railBuilder.rail.getFirst().y > y0 + toMeters(getHeight())){
+            railBuilder.deleteFirst();
+        }
+
+//        System.out.println(railBuilder.rail.size());
 
 //        if (dy > RailBlock.length * 5){
 //            railBuilder.rail.removeFirst();
@@ -96,8 +118,13 @@ public class Frame extends JFrame implements MouseWheelListener {
                     g.setColor(new Color(161, 208, 73));
                 else g.setColor(new Color(169, 214, 81));
 
-                int xStart = (int) ((n - x0) * currentScale);
-                int yStart = (int) ((m - y0) * currentScale);
+                int xStart = toPixels(n - x0);
+                int yStart = toPixels(m - y0);
+
+                System.out.println("xStart: " + xStart);
+                System.out.println("yStart: " + yStart);
+
+
 
                 g.fillRect(xStart, yStart , (int) ((n + 5 - x0) * currentScale) - xStart,(int) ((m + 5 - x0) * currentScale) - yStart);
             }
@@ -105,25 +132,32 @@ public class Frame extends JFrame implements MouseWheelListener {
         // рельса
         g.setColor(Color.black);
 
-//        for (RailBlock railBlock: railBuilder.rail){
-        {
-            RailBlock railBlock = railBuilder.rail.get(1);
-            g.setColor(Color.red);
-//            g.drawOval((int)(railBlock.x * currentScale), (int) (railBlock.y * currentScale), 1, 1);
+         for (RailBlock railBlock: railBuilder.rail){
             g.setColor(Color.black);
             if (!railBlock.isRotate) {
-                g.drawLine((int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0) * currentScale), (int) ((railBlock.y - y0 + RailBlock.length) * currentScale));
-                g.drawLine((int) ((railBlock.x - x0 + RailBlock.width) * currentScale) - 1, (int) ((railBlock.y - y0) * currentScale), (int) ((railBlock.x - x0 + RailBlock.width) * currentScale) - 1, (int) ((railBlock.y - y0 + RailBlock.length) * currentScale));
+                if (railBlock.direction == Direction.UP) {
+                    g.drawLine(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0 - RailBlock.length), toPixels(railBlock.x - x0), toPixels(railBlock.y - y0));
+                    g.drawLine(toPixels(railBlock.x - x0 + RailBlock.width) - 1, toPixels(railBlock.y - y0 - RailBlock.length), toPixels(railBlock.x - x0 + RailBlock.width) - 1, toPixels(railBlock.y - y0));
+                }
+                else if (railBlock.direction == Direction.DOWN){
+                    g.drawLine(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0), toPixels(railBlock.x - x0), toPixels(railBlock.y - y0 + RailBlock.length));
+                    g.drawLine(toPixels(railBlock.x - x0 - RailBlock.width) - 1, toPixels(railBlock.y - y0), toPixels(railBlock.x - x0 - RailBlock.width) - 1, toPixels(railBlock.y - y0 + RailBlock.length));
+                }
+                else if (railBlock.direction == Direction.RIGHT){
+                    g.drawLine(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0), toPixels(railBlock.x - x0 + RailBlock.length), toPixels(railBlock.y - y0));
+                    g.drawLine(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0 + RailBlock.width) - 1, toPixels(railBlock.x - x0 + RailBlock.length), toPixels(railBlock.y - y0 + RailBlock.width) - 1);
+                }
+                else {
+                    g.drawLine(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0), toPixels(railBlock.x - x0 - RailBlock.length), toPixels(railBlock.y - y0));
+                    g.drawLine(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0 - RailBlock.width) - 1, toPixels(railBlock.x - x0 - RailBlock.length), toPixels(railBlock.y - y0 - RailBlock.width) - 1);
+                }
             }
             else {
-                g.drawArc(toPixels(railBlock.xCenter - RailBlock.width - RailBuilder.R - x0), toPixels(railBlock.yCenter - RailBlock.width - RailBuilder.R - y0 - 30), toPixels(RailBlock.width + RailBuilder.R), toPixels(RailBlock.width + RailBuilder.R), railBlock.ang1, railBlock.ang2);
-                System.out.println(railBlock.ang1);
-                System.out.println(railBlock.ang2);
-                g.drawRect(500, 500, 100, 100);
-                g.drawArc(500,500,100,100,180,90);
-//                g.drawArc(toPixels(railBlock.xCenter - RailBlock.width - RailBuilder.R - x0), toPixels(railBlock.yCenter - RailBlock.width - RailBuilder.R - y0 - 30), toPixels(RailBuilder.R), toPixels(RailBuilder.R), railBlock.ang1, railBlock.ang2);
+                g.drawArc(toPixels(railBlock.xCenter - RailBlock.width - RailBuilder.R - x0), toPixels(railBlock.yCenter - RailBlock.width - RailBuilder.R - y0), toPixels(RailBlock.width + RailBuilder.R) * 2, toPixels(RailBlock.width + RailBuilder.R) * 2, railBlock.ang1, railBlock.ang2);
+                g.drawArc(toPixels(railBlock.xCenter - RailBuilder.R - x0), toPixels(railBlock.yCenter - RailBuilder.R - y0), toPixels(RailBuilder.R) * 2, toPixels(RailBuilder.R) * 2, railBlock.ang1, railBlock.ang2);
             }
-        }
+
+         }
 
         // трамвайка
         g.setColor(Color.cyan);
@@ -185,7 +219,7 @@ public class Frame extends JFrame implements MouseWheelListener {
     }
 
     int toMeters(int xPixels){
-        return (int) (xPixels / currentScale + x0);
+        return (int) (xPixels / currentScale);
     }
 
 
