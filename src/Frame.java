@@ -42,21 +42,11 @@ public class Frame extends JFrame implements MouseWheelListener {
         x0 = 0; // 0 m
         //y0 = mapBlock.height - toMeters(this.getHeight()); // 50 m
         y0 = 0; // 0 m
-        railBuilder = new RailBuilder((int) (x0 + this.getWidth() / 2 / currentScale - 2), (int) (y0 + this.getHeight() / currentScale - 5), Direction.UP); // x = 98 m, y = 195 m
+        railBuilder = new RailBuilder((int) (x0 + toMeters(this.getWidth()) / 2 - RailBlock.width / 2), (int) (y0 + this.getHeight() / currentScale - 5), Direction.UP); // x = 98 m, y = 195 m
         tram = new Tram(railBuilder.rail);
         prevTime = System.currentTimeMillis();
 
         people = new ArrayList<>();
-
-//        for (int i = 0; i < 50; i++)
-//        {
-//            boolean isRotate = r.nextBoolean();
-//            if (!isRotate)
-//                railBuilder.move();
-//            else railBuilder.rotate(new Random().nextBoolean());
-//        }
-
-
 
 
         addMouseWheelListener(this);
@@ -77,11 +67,9 @@ public class Frame extends JFrame implements MouseWheelListener {
         dy += y0 - (tram.y - this.getHeight() / 2.0 / currentScale);
 
 
-//        System.out.println("tram.y: " + tram.y);
-//        System.out.println("getHeight: " + toMeters(getHeight()));
-        if (tram.y < toMeters(getHeight()) / 2.0) y0 = tram.y - this.getHeight() / 2.0 / currentScale;
+//        if (tram.y < toMeters(getHeight()) / 2.0)
+            y0 = tram.y - this.getHeight() / 2.0 / currentScale;
         x0 = (tram.x - toMeters(this.getWidth()) / 2.0 + RailBlock.width / 2.0);
-        System.out.println(tram.x);
 
 
         Random  r = new Random();
@@ -97,14 +85,7 @@ public class Frame extends JFrame implements MouseWheelListener {
             railBuilder.deleteFirst();
         }
 
-//        System.out.println(railBuilder.rail.size());
-
-//        if (dy > RailBlock.length * 5){
-//            railBuilder.rail.removeFirst();
-//            for (int i = 0; i < 5; i++)
-//                railBuilder.move();
-//            dy = 0;
-//        }
+        System.out.println(y0);
 
 
 
@@ -114,21 +95,37 @@ public class Frame extends JFrame implements MouseWheelListener {
             currentScale += scaleSpeed;
 
 
-        for (int m = 0; m < mapBlock.height; m += 5)
-            for(int n = 0; n < mapBlock.width; n += 5) {
-                if ((m % 10 == 0 && n % 10 != 0) || (m % 10 != 0 && n % 10 == 0))
+        int cellSize = 100;
+        for (int m = 0; m < getHeight() + 2 * cellSize; m += cellSize)
+            for(int n = 0; n < getWidth() + 2 * cellSize; n += cellSize) {
+//                if ((m % (2 * cellSize) == 0 && n % (cellSize * 2) != 0) || (m % (2 * cellSize) != 0 && n % (cellSize * 2) == 0))
+                if ((y0 / toMeters(cellSize)) % 2 == 0)
                     g.setColor(new Color(161, 208, 73));
                 else g.setColor(new Color(169, 214, 81));
 
-                int xStart = toPixels(n - x0);
-                int yStart = toPixels(m - y0);
+//                int xStart = toPixels(n - x0);
+//                int yStart = toPixels(m - y0);
 
-//                System.out.println("xStart: " + xStart);
-//                System.out.println("yStart: " + yStart);
+                int xStart = ((toPixels(x0) + cellSize) % cellSize) + n;
+                int yStart = - ((toPixels(y0) + cellSize) % cellSize) + m;
+
+//                if (m == 5 * cellSize && n == 5 * cellSize){
+//                    System.out.println("toPixels(y0) % cell size: " + (toPixels(y0) % cellSize));
+//                    System.out.println("(toPixels(y0) + cellSize) % cellSize): " + (toPixels(y0) + cellSize) % cellSize);
+//                    System.out.println("xStart: " + xStart);
+//                    System.out.println("yStart: " + yStart);
+//                    g.fillRect(xStart, yStart , cellSize,cellSize);
+//                }
+//                if (m == 6 * cellSize && n == 5 * cellSize){
+//                    g.setColor(Color.black);
+//                    g.fillRect(xStart, yStart , cellSize,cellSize);
+//                }
+//                System.out.println("m: " + m);
+//                System.out.println("n: " + n);
 
 
 
-                g.fillRect(xStart, yStart , (int) ((n + 5 - x0) * currentScale) - xStart,(int) ((m + 5 - x0) * currentScale) - yStart);
+                g.fillRect(xStart, yStart , cellSize,cellSize);
             }
 
         // рельса
