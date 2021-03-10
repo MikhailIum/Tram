@@ -64,10 +64,7 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         super.paint(g);
 
-        dy += y0 - (tram.y - this.getHeight() / 2.0 / currentScale);
-
-
-//        if (tram.y < toMeters(getHeight()) / 2.0)
+        if (tram.y < toMeters(getHeight()) / 2.0)
             y0 = tram.y - this.getHeight() / 2.0 / currentScale;
         x0 = (tram.x - toMeters(this.getWidth()) / 2.0 + RailBlock.width / 2.0);
 
@@ -75,8 +72,8 @@ public class Frame extends JFrame implements MouseWheelListener {
         Random  r = new Random();
         while (railBuilder.rail.getLast().y > y0 - 2 * RailBlock.length)
         {
-            boolean isRotate = r.nextBoolean();
-            if (!isRotate)
+            int isRotate = r.nextInt(100);
+            if (isRotate > 5)
                 railBuilder.move();
             else railBuilder.rotate(new Random().nextBoolean());
         }
@@ -100,7 +97,7 @@ public class Frame extends JFrame implements MouseWheelListener {
 //        for (int m = -cellSize; m <= 0; m += cellSize)
 //            for(int n = 0 * -cellSize; n <= 0; n += cellSize) {
 
-                double xStart = ((toPixelsD(x0)) % cellSize) + n;
+                double xStart = - ((toPixelsD(x0)) % cellSize) + n;
                 double yStart = - ((toPixelsD(y0)) % cellSize) + m;
 
 //                System.out.println((toPixelsD(y0)) % cellSize);
