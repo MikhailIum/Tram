@@ -85,8 +85,6 @@ public class Frame extends JFrame implements MouseWheelListener {
             railBuilder.deleteFirst();
         }
 
-        System.out.println(y0);
-
 
 
         if(currentScale > targetScale + scaleSpeed)
@@ -96,36 +94,34 @@ public class Frame extends JFrame implements MouseWheelListener {
 
 
         int cellSize = 100;
-        for (int m = 0; m < getHeight() + 2 * cellSize; m += cellSize)
-            for(int n = 0; n < getWidth() + 2 * cellSize; n += cellSize) {
-//                if ((m % (2 * cellSize) == 0 && n % (cellSize * 2) != 0) || (m % (2 * cellSize) != 0 && n % (cellSize * 2) == 0))
-                if ((y0 / toMeters(cellSize)) % 2 == 0)
-                    g.setColor(new Color(161, 208, 73));
-                else g.setColor(new Color(169, 214, 81));
+//        System.out.println("__________");
+        for (int m = -cellSize; m < getHeight() + cellSize; m += cellSize)
+            for(int n = -cellSize; n < getWidth() + cellSize; n += cellSize) {
+//        for (int m = -cellSize; m <= 0; m += cellSize)
+//            for(int n = 0 * -cellSize; n <= 0; n += cellSize) {
 
-//                int xStart = toPixels(n - x0);
-//                int yStart = toPixels(m - y0);
+                double xStart = ((toPixelsD(x0)) % cellSize) + n;
+                double yStart = - ((toPixelsD(y0)) % cellSize) + m;
 
-                int xStart = ((toPixels(x0) + cellSize) % cellSize) + n;
-                int yStart = - ((toPixels(y0) + cellSize) % cellSize) + m;
+//                System.out.println((toPixelsD(y0)) % cellSize);
+//                System.out.println(yStart + " " + (toPixelsD(y0) + cellSize) + " " + ((toPixelsD(y0) + cellSize) % cellSize));
 
-//                if (m == 5 * cellSize && n == 5 * cellSize){
-//                    System.out.println("toPixels(y0) % cell size: " + (toPixels(y0) % cellSize));
-//                    System.out.println("(toPixels(y0) + cellSize) % cellSize): " + (toPixels(y0) + cellSize) % cellSize);
-//                    System.out.println("xStart: " + xStart);
-//                    System.out.println("yStart: " + yStart);
-//                    g.fillRect(xStart, yStart , cellSize,cellSize);
+//                boolean isDark = false;
+//                if ((((int) ((y0 + toMetersD(yStart)) / toMetersD(cellSize))) % 2 == 0) && (((x0 + toMetersD(xStart)) / toMetersD(cellSize)) % 2 != 0) ||
+//                        ((((int) ((y0 + toMetersD(yStart)) / toMetersD(cellSize)) % 2) != 0) && (((x0 + toMetersD(xStart)) / toMetersD(cellSize)) % 2 == 0)))
+//                {
+//                    isDark = true;
+//                    g.setColor(new Color(161, 208, 73));
+//                } else{
+//                    isDark = false;
+//                    g.setColor(new Color(169, 214, 81));
 //                }
-//                if (m == 6 * cellSize && n == 5 * cellSize){
-//                    g.setColor(Color.black);
-//                    g.fillRect(xStart, yStart , cellSize,cellSize);
-//                }
-//                System.out.println("m: " + m);
-//                System.out.println("n: " + n);
 
-
-
-                g.fillRect(xStart, yStart , cellSize,cellSize);
+//                System.out.println(m + " " + (y0 + toMetersD(yStart)) + " " + ((y0 + toMetersD(yStart)) / toMetersD(cellSize)) + " " + isDark);
+                g.setColor(new Color(161, 208, 73));
+                g.fillRect((int)xStart, (int)yStart , cellSize,cellSize);
+                g.setColor(new Color(169, 214, 81));
+                g.fillRect((int)xStart+cellSize/20, (int)yStart+cellSize/20 , cellSize*18/20,cellSize*18/20);
             }
 
         // рельса
@@ -219,6 +215,14 @@ public class Frame extends JFrame implements MouseWheelListener {
 
     int toMeters(int xPixels){
         return (int) (xPixels / currentScale);
+    }
+
+    double toPixelsD(double xMeters){
+        return (xMeters * currentScale);
+    }
+
+    double toMetersD(double xPixels){
+        return (xPixels / currentScale);
     }
 
 
