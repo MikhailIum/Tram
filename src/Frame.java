@@ -78,7 +78,7 @@ public class Frame extends JFrame implements MouseWheelListener {
             else railBuilder.rotate(new Random().nextBoolean());
         }
 
-        while (railBuilder.rail.getFirst().y > y0 + toMeters(getHeight())){
+        while (railBuilder.rail.get(1).y > y0 + toMeters(getHeight())){
             railBuilder.deleteFirst();
         }
 
@@ -164,15 +164,31 @@ public class Frame extends JFrame implements MouseWheelListener {
             int y2 = (int) (startY + heightY);
 //            g.fillRect(x1, y1, x2 - x1, y2 - y1);
             // TODO: вернуть трамвай
+            g.fillOval(x1, y1, 40, 40);
         }
 
         dt = System.currentTimeMillis() - prevTime;
 
 
-        tram.y -= speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2;
-        if (speed <= 17) speed += acceleration * dt / 1000;
+        if (!tram.currentRailBlock.isRotate) {
+                tram.x += tram.currentRailBlock.direction.dx * (speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2);
+                tram.y += tram.currentRailBlock.direction.dy * (speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2);
+                if (speed <= 17) speed += acceleration * dt / 1000;
+                if ((tram.currentRailBlock.direction == Direction.UP && tram.y < tram.currentRailBlock.y - RailBlock.length) ||
+                        (tram.currentRailBlock.direction == Direction.RIGHT && tram.x > tram.currentRailBlock.x + RailBlock.length) ||
+                        (tram.currentRailBlock.direction == Direction.LEFT && tram.x < tram.currentRailBlock.x + RailBlock.length)){
+                    tram.currentRailBlock = tram.rail.get(tram.rail.indexOf(tram.currentRailBlock) + 1);
+                }
+        }
+        else{
+            tram.ang = Math.asin((tram.currentRailBlock.y - tram.y) / (RailBuilder.R + RailBlock.length));
+//            double a = tram.currentRailBlock.x + RailBuilder.R + RailBlock.length - tram.x;
+//            double b = tram.currentRailBlock.y + 20 - tram.y;
+//            tram.ang = Math.asin(b / Math.sqrt(a * a + b * b));
 
-
+            tram.y -= Math.cos(tram.ang) * (speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2);
+            tram.x += Math.sin(tram.ang) * (speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2);
+        }
 
         // Людишки(бедолаги)
         synchronized (people) {
