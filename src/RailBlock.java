@@ -26,5 +26,7 @@ public class RailBlock {
         this.y = y;
         this.direction = direction;
         this.isRotate = isRotate;
+        this.xCenter = x;
+        this.yCenter = y;
     }
 }

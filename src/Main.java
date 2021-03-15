@@ -3,9 +3,9 @@ public class Main {
         Frame frame = new Frame();
         while(true){
             synchronized (frame.people) {
-                //frame.people.add(new Person(frame));
+                frame.people.add(new Person(frame));
             }
-            Thread.sleep(10);
+            Thread.sleep(1000);
         }
     }
 }

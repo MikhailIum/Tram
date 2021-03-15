@@ -173,22 +173,50 @@ public class Frame extends JFrame implements MouseWheelListener {
         if (!tram.currentRailBlock.isRotate) {
                 tram.x += tram.currentRailBlock.direction.dx * (speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2);
                 tram.y += tram.currentRailBlock.direction.dy * (speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2);
-                if (speed <= 17) speed += acceleration * dt / 1000;
-                if ((tram.currentRailBlock.direction == Direction.UP && tram.y < tram.currentRailBlock.y - RailBlock.length) ||
-                        (tram.currentRailBlock.direction == Direction.RIGHT && tram.x > tram.currentRailBlock.x + RailBlock.length) ||
-                        (tram.currentRailBlock.direction == Direction.LEFT && tram.x < tram.currentRailBlock.x + RailBlock.length)){
+
+            if ((tram.currentRailBlock.direction == Direction.UP && tram.y + 1 < tram.currentRailBlock.yCenter - RailBlock.length) ||
+                    (tram.currentRailBlock.direction == Direction.RIGHT && tram.x + 1 > tram.currentRailBlock.x + RailBlock.length) ||
+                    (tram.currentRailBlock.direction == Direction.LEFT && tram.x + 1 < tram.currentRailBlock.x - RailBlock.length)) {
+                tram.currentRailBlock = tram.rail.get(tram.rail.indexOf(tram.currentRailBlock) + 1);
+            }
+        }
+        else {
+            if (tram.currentRailBlock.direction == Direction.UP) {
+
+                double a = tram.rail.get(tram.rail.indexOf(tram.currentRailBlock) - 1).direction.dx * (tram.x + 1) - tram.rail.get(tram.rail.indexOf(tram.currentRailBlock) - 1).direction.dx * tram.currentRailBlock.xCenter;
+                double b = (tram.y + 1) - tram.currentRailBlock.yCenter;
+                tram.ang = Math.atan(a / b);
+
+
+                tram.y -= Math.abs(Math.sin(tram.ang) * (speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2));
+                tram.x += tram.rail.get(tram.rail.indexOf(tram.currentRailBlock) - 1).direction.dx * Math.cos(tram.ang) * (speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2);
+
+                System.out.println(tram.ang);
+
+                if (tram.y + 1 < tram.currentRailBlock.yCenter) {
                     tram.currentRailBlock = tram.rail.get(tram.rail.indexOf(tram.currentRailBlock) + 1);
                 }
-        }
-        else{
-            tram.ang = Math.asin((tram.currentRailBlock.y - tram.y) / (RailBuilder.R + RailBlock.length));
-//            double a = tram.currentRailBlock.x + RailBuilder.R + RailBlock.length - tram.x;
-//            double b = tram.currentRailBlock.y + 20 - tram.y;
-//            tram.ang = Math.asin(b / Math.sqrt(a * a + b * b));
 
-            tram.y -= Math.cos(tram.ang) * (speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2);
-            tram.x += Math.sin(tram.ang) * (speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2);
+            } else {
+                double a = tram.currentRailBlock.direction.dx * tram.currentRailBlock.xCenter - tram.currentRailBlock.direction.dx * (tram.x + 1);
+                double b = tram.currentRailBlock.y - (tram.y + 1);
+                tram.ang = Math.atan(b / a);
+
+
+                tram.y -= Math.cos(tram.ang) * (speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2);
+                tram.x += tram.currentRailBlock.direction.dx * Math.abs(Math.sin(tram.ang) * (speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2));
+
+                if (tram.currentRailBlock.direction == Direction.RIGHT && tram.x > tram.currentRailBlock.x + RailBlock.length || tram.currentRailBlock.direction == Direction.LEFT && tram.x < tram.currentRailBlock.x - RailBlock.length) {
+                    tram.currentRailBlock = tram.rail.get(tram.rail.indexOf(tram.currentRailBlock) + 1);
+                }
+            }
         }
+
+
+        if (speed <= 17) speed += acceleration * dt / 1000;
+
+
+
 
         // Людишки(бедолаги)
         synchronized (people) {
