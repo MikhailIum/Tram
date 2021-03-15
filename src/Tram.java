@@ -4,7 +4,8 @@ public class Tram {
     double x;
     double y;
     int width = 2;
-    int height = 35;
+    int height = 2;
+    //TODO: height = 35
     double ang;
     RailBlock currentRailBlock;
     LinkedList<RailBlock> rail;

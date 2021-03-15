@@ -91,30 +91,15 @@ public class Frame extends JFrame implements MouseWheelListener {
 
 
         int cellSize = 100;
-//        System.out.println("__________");
+
         for (int m = -cellSize; m < getHeight() + cellSize; m += cellSize)
             for(int n = -cellSize; n < getWidth() + cellSize; n += cellSize) {
-//        for (int m = -cellSize; m <= 0; m += cellSize)
-//            for(int n = 0 * -cellSize; n <= 0; n += cellSize) {
+
 
                 double xStart = - ((toPixelsD(x0)) % cellSize) + n;
                 double yStart = - ((toPixelsD(y0)) % cellSize) + m;
 
-//                System.out.println((toPixelsD(y0)) % cellSize);
-//                System.out.println(yStart + " " + (toPixelsD(y0) + cellSize) + " " + ((toPixelsD(y0) + cellSize) % cellSize));
 
-//                boolean isDark = false;
-//                if ((((int) ((y0 + toMetersD(yStart)) / toMetersD(cellSize))) % 2 == 0) && (((x0 + toMetersD(xStart)) / toMetersD(cellSize)) % 2 != 0) ||
-//                        ((((int) ((y0 + toMetersD(yStart)) / toMetersD(cellSize)) % 2) != 0) && (((x0 + toMetersD(xStart)) / toMetersD(cellSize)) % 2 == 0)))
-//                {
-//                    isDark = true;
-//                    g.setColor(new Color(161, 208, 73));
-//                } else{
-//                    isDark = false;
-//                    g.setColor(new Color(169, 214, 81));
-//                }
-
-//                System.out.println(m + " " + (y0 + toMetersD(yStart)) + " " + ((y0 + toMetersD(yStart)) / toMetersD(cellSize)) + " " + isDark);
                 g.setColor(new Color(161, 208, 73));
                 g.fillRect((int)xStart, (int)yStart , cellSize,cellSize);
                 g.setColor(new Color(169, 214, 81));
@@ -150,6 +135,31 @@ public class Frame extends JFrame implements MouseWheelListener {
             }
 
          }
+
+        // Людишки(бедолаги)
+        synchronized (people) {
+            for (Person person: people){
+                person.checkCollision(this);
+
+                g.setColor(person.color);
+
+                if (person.color == Color.orange) {
+                    person.x += dt * 1.0 / 1000 * Math.cos(Math.toRadians(person.angleDeg)) * person.speed + person.acceleration * dt * dt / 1000 / 1000 / 2;
+                    person.y += dt * 1.0 / 1000 * Math.sin(Math.toRadians(person.angleDeg)) * person.speed + person.acceleration * dt * dt / 1000 / 1000 / 2;
+                    g.fillOval((int) ((person.x - x0) * currentScale), (int) ((person.y - y0) * currentScale), (int) (person.width * currentScale), (int) (person.height * currentScale));
+                }
+                else g.fillOval((int) ((person.x - x0) * currentScale), (int) ((person.y - y0) * currentScale), (int) (person.width * currentScale), (int) (person.height * currentScale) + 5);
+
+
+                if (person.x < x0 - 50 || person.x > x0 + mapBlock.width + 50 || person.y < y0 - 50 || person.y > y0 + mapBlock.height + 50){
+                    peopleToBeRemoved.add(person);
+                }
+
+            }
+        }
+        people.removeAll(peopleToBeRemoved);
+
+
 
         // трамвайка
         g.setColor(Color.cyan);
@@ -191,8 +201,6 @@ public class Frame extends JFrame implements MouseWheelListener {
                 tram.y -= Math.abs(Math.sin(tram.ang) * (speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2));
                 tram.x += tram.rail.get(tram.rail.indexOf(tram.currentRailBlock) - 1).direction.dx * Math.cos(tram.ang) * (speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2);
 
-                System.out.println(tram.ang);
-
                 if (tram.y + 1 < tram.currentRailBlock.yCenter) {
                     tram.currentRailBlock = tram.rail.get(tram.rail.indexOf(tram.currentRailBlock) + 1);
                 }
@@ -214,32 +222,6 @@ public class Frame extends JFrame implements MouseWheelListener {
 
 
         if (speed <= 17) speed += acceleration * dt / 1000;
-
-
-
-
-        // Людишки(бедолаги)
-        synchronized (people) {
-            for (Person person: people){
-                person.checkCollision(this);
-
-                g.fillOval((int) ((person.x - x0) * currentScale), (int) ((person.y - y0) * currentScale), (int) (person.width * currentScale), (int) (person.height * currentScale));
-                person.x += dt * 1.0 / 1000 * Math.cos(Math.toRadians(person.angleDeg)) * person.speed + person.acceleration * dt * dt / 1000 / 1000 / 2;
-                person.y += dt * 1.0 / 1000 * Math.sin(Math.toRadians(person.angleDeg)) * person.speed + person.acceleration * dt * dt / 1000 / 1000 / 2;
-
-
-
-                if (person.x < 0 || person.x > mapBlock.width || person.y < 0 || person.y > mapBlock.height){
-                    peopleToBeRemoved.add(person);
-                }
-
-            }
-        }
-        people.removeAll(peopleToBeRemoved);
-
-
-
-
 
 
         g.dispose();                // Освободить все временные ресурсы графики (после этого в нее уже нельзя рисовать)
