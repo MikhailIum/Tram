@@ -151,7 +151,7 @@ public class Frame extends JFrame implements MouseWheelListener {
                 else g.fillOval((int) ((person.x - x0) * currentScale), (int) ((person.y - y0) * currentScale), (int) (person.width * currentScale), (int) (person.height * currentScale) + 5);
 
 
-                if (person.x < x0 - 50 || person.x > x0 + mapBlock.width + 50 || person.y < y0 - 50 || person.y > y0 + mapBlock.height + 50){
+                if (person.x < x0 - 50 || person.x > x0 + mapBlock.width + 50 || person.y < y0 - 50 || person.y > y0 + mapBlock.height){
                     peopleToBeRemoved.add(person);
                 }
 
@@ -221,8 +221,20 @@ public class Frame extends JFrame implements MouseWheelListener {
         }
 
 
-        if (speed <= 17) speed += acceleration * dt / 1000;
+        if (railBuilder.rail.get(tram.rail.indexOf(tram.currentRailBlock) + 2).isRotate || railBuilder.rail.get(tram.rail.indexOf(tram.currentRailBlock) + 1).isRotate || railBuilder.rail.get(tram.rail.indexOf(tram.currentRailBlock) + 3).isRotate){
+            speed -= acceleration * dt / 1000;
+        }
+        else if (speed <= 17) speed += acceleration * dt / 1000;
 
+        synchronized (people) {
+            for (Person person : people) {
+                double diff = Math.sqrt(Math.pow(person.x - railBuilder.rail.get(tram.rail.indexOf(tram.currentRailBlock) + 2).x, 2) +
+                        Math.pow(person.y - railBuilder.rail.get(tram.rail.indexOf(tram.currentRailBlock) + 2).y, 2));
+
+                speed -= 40 / diff / diff * dt / 1000;
+                if (speed < 0) speed = 0;
+            }
+        }
 
         g.dispose();                // Освободить все временные ресурсы графики (после этого в нее уже нельзя рисовать)
         bufferStrategy.show();      // Сказать буферизирующей стратегии отрисовать новый буфер (т.е. поменять показываемый и обновляемый буферы местами)
