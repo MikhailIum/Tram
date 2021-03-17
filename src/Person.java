@@ -22,6 +22,12 @@ public class Person {
         color = Color.orange;
     }
 
+    Person(double x, double y){
+        this.x = x;
+        this.y = y;
+        color = Color.orange;
+    }
+
     public void checkCollision(Frame frame){
         Tram tram = frame.tram;
         if (x + width >= tram.x && x <= tram.x + tram.width && y + height >= tram.y && y <= tram.y + tram.height) {

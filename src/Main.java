@@ -5,7 +5,7 @@ public class Main {
             synchronized (frame.people) {
                 frame.people.add(new Person(frame));
             }
-            Thread.sleep(1000);
+            Thread.sleep(500);
         }
     }
 }

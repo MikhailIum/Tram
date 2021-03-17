@@ -220,20 +220,35 @@ public class Frame extends JFrame implements MouseWheelListener {
             }
         }
 
-
-        if (railBuilder.rail.get(tram.rail.indexOf(tram.currentRailBlock) + 2).isRotate || railBuilder.rail.get(tram.rail.indexOf(tram.currentRailBlock) + 1).isRotate || railBuilder.rail.get(tram.rail.indexOf(tram.currentRailBlock) + 3).isRotate){
-            speed -= acceleration * dt / 1000;
-        }
-        else if (speed <= 17) speed += acceleration * dt / 1000;
-
         synchronized (people) {
+            double minDiff = 100000;
+            Person closestPerson = new Person(people.get(0).x, people.get(0).y);
             for (Person person : people) {
-                double diff = Math.sqrt(Math.pow(person.x - railBuilder.rail.get(tram.rail.indexOf(tram.currentRailBlock) + 2).x, 2) +
-                        Math.pow(person.y - railBuilder.rail.get(tram.rail.indexOf(tram.currentRailBlock) + 2).y, 2));
-
-                speed -= 40 / diff / diff * dt / 1000;
-                if (speed < 0) speed = 0;
+                double diff = Math.abs(person.x - tram.x) +
+                        Math.abs(person.y - tram.y);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closestPerson = new Person(person.x, person.y);
+                }
             }
+
+            RailBlock nextBlock = tram.currentRailBlock;
+            for (int personPosition = 0; personPosition < 3; personPosition++) {
+                for (int i = 0; i <= 10; i++) {
+                    nextBlock = railBuilder.rail.get(tram.rail.indexOf(tram.currentRailBlock) + i);
+
+                    if (closestPerson.x >= nextBlock.x && closestPerson.x <= nextBlock.x + RailBlock.width && closestPerson.y > nextBlock.y && closestPerson.y < nextBlock.y + RailBlock.width) {
+                        speed -= 2 * acceleration * dt / 1000;
+                    }
+
+                    double ddt = 0.25;
+                    closestPerson.x += ddt / 1000 * Math.cos(Math.toRadians(closestPerson.angleDeg)) * closestPerson.speed + closestPerson.acceleration * ddt * ddt / 1000 / 1000 / 2;
+                    closestPerson.y += ddt / 1000 * Math.sin(Math.toRadians(closestPerson.angleDeg)) * closestPerson.speed + closestPerson.acceleration * ddt * ddt / 1000 / 1000 / 2;
+                }
+            }
+
+            if (speed <= 17) speed += acceleration * dt / 1000;
+            if (speed < 0) speed = 0;
         }
 
         g.dispose();                // Освободить все временные ресурсы графики (после этого в нее уже нельзя рисовать)
