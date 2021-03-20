@@ -30,6 +30,7 @@ public class Frame extends JFrame implements MouseWheelListener {
     int DT = 0;
     int points = 0;
     boolean graphicsOn = true;
+    long TIME = System.currentTimeMillis();
 
 
 
@@ -50,6 +51,7 @@ public class Frame extends JFrame implements MouseWheelListener {
         //prevTime = System.currentTimeMillis();
 
         people = new ArrayList<>();
+        people.add(new Person(this));
 
 
         addMouseWheelListener(this);
@@ -136,7 +138,6 @@ public class Frame extends JFrame implements MouseWheelListener {
          }
 
         // Людишки(бедолаги)
-        synchronized (people) {
             for (Person person: people){
                 person.checkCollision(this);
 
@@ -155,7 +156,6 @@ public class Frame extends JFrame implements MouseWheelListener {
                 }
 
             }
-        }
         people.removeAll(peopleToBeRemoved);
 
 
@@ -222,7 +222,6 @@ public class Frame extends JFrame implements MouseWheelListener {
             }
         }
 
-        synchronized (people) {
             double minDiff = 100000;
             Person closestPerson = new Person(people.get(0).x, people.get(0).y);
             for (Person person : people) {
@@ -232,18 +231,19 @@ public class Frame extends JFrame implements MouseWheelListener {
                     minDiff = diff;
                     closestPerson = new Person(person.x, person.y);
                 }
-            }
 
-            RailBlock nextBlock = tram.currentRailBlock;
-            for (int personPosition = 0; personPosition < 3; personPosition++) {
-                for (int i = 0; i <= 10; i++) {
+            RailBlock nextBlock;
+            int nextBlocks = 5;
+            int futurePositions = 3;
+            double ddt = 0.25;
+            for (int personPosition = 0; personPosition < futurePositions; personPosition++) {
+                for (int i = 0; i <= nextBlocks; i++) {
                     nextBlock = railBuilder.rail.get(tram.rail.indexOf(tram.currentRailBlock) + i);
 
                     if (closestPerson.x >= nextBlock.x && closestPerson.x <= nextBlock.x + RailBlock.width && closestPerson.y > nextBlock.y && closestPerson.y < nextBlock.y + RailBlock.width) {
                         speed -= 2 * acceleration * dt / 1000;
                     }
 
-                    double ddt = 0.25;
                     closestPerson.x += ddt / 1000 * Math.cos(Math.toRadians(closestPerson.angleDeg)) * closestPerson.speed + closestPerson.acceleration * ddt * ddt / 1000 / 1000 / 2;
                     closestPerson.y += ddt / 1000 * Math.sin(Math.toRadians(closestPerson.angleDeg)) * closestPerson.speed + closestPerson.acceleration * ddt * ddt / 1000 / 1000 / 2;
                 }
@@ -253,7 +253,8 @@ public class Frame extends JFrame implements MouseWheelListener {
             if (speed < 0) speed = 0;
         }
 
-//        if (DT <= 5 * 3000) System.out.println(points);
+            if (DT % 500 == 0) people.add(new Person(this));
+        if (DT <= 5 * 3000) System.out.println(points);
 
         g.dispose();                // Освободить все временные ресурсы графики (после этого в нее уже нельзя рисовать)
         bufferStrategy.show();      // Сказать буферизирующей стратегии отрисовать новый буфер (т.е. поменять показываемый и обновляемый буферы местами)
