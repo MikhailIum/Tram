@@ -3,6 +3,7 @@ public class Main {
         Frame frame = new Frame();
         while(true){
             synchronized (frame.people) {
+                System.out.println(frame.x0);
                 frame.people.add(new Person(frame));
             }
             Thread.sleep(500);

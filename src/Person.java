@@ -11,14 +11,16 @@ public class Person {
     double acceleration = 0;
     Color color;
 
+
     Person(Frame frame){
-        x = new Random().nextInt(frame.mapBlock.width + 100) - 50 + frame.x0;
+        x = new Random(32234).nextInt(frame.mapBlock.width + 100) - 50  + frame.x0;
+
 
         if (x >= frame.x0 && x <= frame.x0 + frame.getWidth())
-            y = new Random().nextInt(frame.mapBlock.height) - 50 + frame.y0;
-        else y = new Random().nextInt(frame.mapBlock.height + 50) - 50 + frame.y0;
+            y = new Random(234234).nextInt(frame.mapBlock.height) - 50 + frame.y0;
+        else y = new Random(12343).nextInt(frame.mapBlock.height + 50) - 50 + frame.y0;
 
-        angleDeg = new Random().nextInt(180);
+        angleDeg = new Random(47473).nextInt(180);
         color = Color.orange;
     }
 
@@ -33,6 +35,7 @@ public class Person {
         if (x + width >= tram.x && x <= tram.x + tram.width && y + height >= tram.y && y <= tram.y + tram.height) {
 //            frame.peopleToBeRemoved.add(this);
             color = Color.RED;
+//            frame.points -= 10;
         }
     }
 }
