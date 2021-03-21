@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -22,24 +23,38 @@ public class Frame extends JFrame implements MouseWheelListener {
     MapBlock mapBlock;
     double currentScale;
     double targetScale;
-    long prevTime;
     long dt;
     ArrayList<Person> people;
+    ArrayList<Person> deadPeople;
     ArrayList<Person> peopleToBeRemoved = new ArrayList<>();
     RailBuilder railBuilder;
     int DT = 0;
     int points = 0;
     boolean graphicsOn = true;
-    long TIME = System.currentTimeMillis();
+    int nextBlocks;
+    int futurePositions;
+    double ddt;
 
 
 
-    Frame(){
+    Frame(int nextBlocks, int futurePositions, double ddt){
         this.setSize(1000, 1000);
         this.setTitle("Tram");
-        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.setLocation(500, 50);
         this.setVisible(true);
+
+        if (graphicsOn) {
+            this.nextBlocks = 5;
+            this.futurePositions = 9;
+            this.ddt = 0.5506;
+        }
+        else {
+            this.nextBlocks = nextBlocks;
+            this.futurePositions = futurePositions;
+            this.ddt = ddt;
+        }
+
 
         currentScale = targetScale = 20;
         mapBlock = new MapBlock(toMeters(getHeight()), toMeters(getWidth())); // 50, 50
@@ -52,7 +67,7 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         people = new ArrayList<>();
         people.add(new Person(this));
-
+        deadPeople = new ArrayList<>();
 
         addMouseWheelListener(this);
         createBufferStrategy(2);
@@ -148,7 +163,6 @@ public class Frame extends JFrame implements MouseWheelListener {
                     person.y += dt * 1.0 / 1000 * Math.sin(Math.toRadians(person.angleDeg)) * person.speed + person.acceleration * dt * dt / 1000 / 1000 / 2;
                     if (graphicsOn) g.fillOval((int) ((person.x - x0) * currentScale), (int) ((person.y - y0) * currentScale), (int) (person.width * currentScale), (int) (person.height * currentScale));
                 }
-                else if (graphicsOn) g.fillOval((int) ((person.x - x0) * currentScale), (int) ((person.y - y0) * currentScale), (int) (person.width * currentScale), (int) (person.height * currentScale) + 5);
 
 
                 if (person.x < x0 - 50 || person.x > x0 + mapBlock.width + 50 || person.y < y0 - 50 || person.y > y0 + mapBlock.height){
@@ -156,7 +170,15 @@ public class Frame extends JFrame implements MouseWheelListener {
                 }
 
             }
+            for (Person person: deadPeople){
+                if (graphicsOn) {
+                    g.setColor(person.color);
+                    g.fillOval((int) ((person.x - x0) * currentScale), (int) ((person.y - y0) * currentScale), (int) (person.width * currentScale), (int) (person.height * currentScale) + 5);
+                }
+
+            }
         people.removeAll(peopleToBeRemoved);
+
 
 
 
@@ -176,8 +198,8 @@ public class Frame extends JFrame implements MouseWheelListener {
 
 //        dt = System.currentTimeMillis() - prevTime;
 
-        dt = 5;
-        DT += 5;
+        dt = 4;
+        DT += 4;
 
         if (!tram.currentRailBlock.isRotate) {
                 tram.x += tram.currentRailBlock.direction.dx * (speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2);
@@ -222,26 +244,26 @@ public class Frame extends JFrame implements MouseWheelListener {
             }
         }
 
-            double minDiff = 100000;
+        double minDiff = 100000;
             Person closestPerson = new Person(people.get(0).x, people.get(0).y);
             for (Person person : people) {
-                double diff = Math.abs(person.x - tram.x) +
-                        Math.abs(person.y - tram.y);
+                double diff = Math.abs((person.x + person.width / 2.0) - (tram.x + tram.width / 2.0)) +
+                        Math.abs((person.y + person.height / 2.0) - (tram.y + tram.height / 2.0));
                 if (diff < minDiff) {
                     minDiff = diff;
                     closestPerson = new Person(person.x, person.y);
                 }
 
             RailBlock nextBlock;
-            int nextBlocks = 5;
-            int futurePositions = 3;
-            double ddt = 0.25;
+            boolean danger = false;
             for (int personPosition = 0; personPosition < futurePositions; personPosition++) {
                 for (int i = 0; i <= nextBlocks; i++) {
                     nextBlock = railBuilder.rail.get(tram.rail.indexOf(tram.currentRailBlock) + i);
 
-                    if (closestPerson.x >= nextBlock.x && closestPerson.x <= nextBlock.x + RailBlock.width && closestPerson.y > nextBlock.y && closestPerson.y < nextBlock.y + RailBlock.width) {
-                        speed -= 2 * acceleration * dt / 1000;
+                    if ((nextBlock.direction == Direction.UP && closestPerson.x + closestPerson.width >= nextBlock.x - 2 && closestPerson.x <= nextBlock.x + RailBlock.width + 2 && closestPerson.y <= nextBlock.y && closestPerson.y + closestPerson.height >= nextBlock.y - RailBlock.width)
+                    || (nextBlock.direction == Direction.RIGHT && closestPerson.x + closestPerson.width >= nextBlock.x && closestPerson.x <= nextBlock.x + RailBlock.width && closestPerson.y <= nextBlock.y + RailBlock.width + 2 && closestPerson.y + closestPerson.height >= nextBlock.y - 2)
+                    || (nextBlock.direction == Direction.LEFT && closestPerson.x + closestPerson.width >= nextBlock.x - RailBlock.width && closestPerson.x <= nextBlock.x && closestPerson.y <= nextBlock.y + 2 && closestPerson.y + closestPerson.height >= nextBlock.y - RailBlock.width - 2)){
+                        danger = true;
                     }
 
                     closestPerson.x += ddt / 1000 * Math.cos(Math.toRadians(closestPerson.angleDeg)) * closestPerson.speed + closestPerson.acceleration * ddt * ddt / 1000 / 1000 / 2;
@@ -249,12 +271,16 @@ public class Frame extends JFrame implements MouseWheelListener {
                 }
             }
 
-            if (speed <= 18) speed += acceleration * dt / 1000;
+            if (danger) speed -= 2 * acceleration * dt / 1000;
+            else if (speed <= 17) speed += acceleration * dt / 1000;
             if (speed < 0) speed = 0;
         }
 
-            if (DT % 500 == 0) people.add(new Person(this));
-        if (DT <= 5 * 3000) System.out.println(points);
+        if (DT % 500 == 0) people.add(new Person(this));
+        if (DT > 4 * 4000) {
+//            System.out.println("nextBlocks = " + nextBlocks + "; futurePositions = " + futurePositions + "; ddt = " + ddt + ";  points = " + points);
+            dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+        }
 
         g.dispose();                // Освободить все временные ресурсы графики (после этого в нее уже нельзя рисовать)
         bufferStrategy.show();      // Сказать буферизирующей стратегии отрисовать новый буфер (т.е. поменять показываемый и обновляемый буферы местами)
@@ -278,6 +304,10 @@ public class Frame extends JFrame implements MouseWheelListener {
 
     double toMetersD(double xPixels){
         return (xPixels / currentScale);
+    }
+
+    int getScore(){
+        return points;
     }
 
 

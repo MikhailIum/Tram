@@ -33,9 +33,10 @@ public class Person {
     public void checkCollision(Frame frame){
         Tram tram = frame.tram;
         if (x + width >= tram.x && x <= tram.x + tram.width && y + height >= tram.y && y <= tram.y + tram.height) {
-//            frame.peopleToBeRemoved.add(this);
+            frame.peopleToBeRemoved.add(this);
+            frame.deadPeople.add(this);
             color = Color.RED;
-            frame.points -= 10;
+            frame.points -= 50;
         }
     }
 }
