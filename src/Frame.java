@@ -34,10 +34,12 @@ public class Frame extends JFrame implements MouseWheelListener {
     int nextBlocks;
     int futurePositions;
     double ddt;
+    int timeOfOnePopulation;
+    int maxSpeed;
 
 
 
-    Frame(int nextBlocks, int futurePositions, double ddt){
+    Frame(int nextBlocks, int futurePositions, double ddt, int timeOfOnePopulation, int maxSpeed){
         this.setSize(1000, 1000);
         this.setTitle("Tram");
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -54,6 +56,9 @@ public class Frame extends JFrame implements MouseWheelListener {
             this.futurePositions = futurePositions;
             this.ddt = ddt;
         }
+
+        this.timeOfOnePopulation = timeOfOnePopulation;
+        this.maxSpeed = maxSpeed;
 
 
         currentScale = targetScale = 20;
@@ -180,8 +185,6 @@ public class Frame extends JFrame implements MouseWheelListener {
         people.removeAll(peopleToBeRemoved);
 
 
-
-
         // трамвайка
         if (graphicsOn) g.setColor(Color.cyan);
             double startX = ((tram.x - x0) * currentScale);
@@ -272,12 +275,12 @@ public class Frame extends JFrame implements MouseWheelListener {
             }
 
             if (danger) speed -= 2 * acceleration * dt / 1000;
-            else if (speed <= 17) speed += acceleration * dt / 1000;
+            else if (speed <= maxSpeed) speed += acceleration * dt / 1000;
             if (speed < 0) speed = 0;
         }
 
         if (DT % 500 == 0) people.add(new Person(this));
-        if (DT > 4 * 4000) {
+        if (DT > timeOfOnePopulation) {
 //            System.out.println("nextBlocks = " + nextBlocks + "; futurePositions = " + futurePositions + "; ddt = " + ddt + ";  points = " + points);
             dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         }
