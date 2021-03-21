@@ -13,14 +13,14 @@ public class Person {
 
 
     Person(Frame frame){
-        x = new Random(634636).nextInt(frame.mapBlock.width + 100) - 50  + frame.x0;
+        x = new Random().nextInt(frame.mapBlock.width + 100) - 50  + frame.x0;
 
 
         if (x >= frame.x0 && x <= frame.x0 + frame.getWidth())
-            y = new Random(463667).nextInt(frame.mapBlock.height) - 50 + frame.y0;
-        else y = new Random(63463).nextInt(frame.mapBlock.height + 50) - 50 + frame.y0;
+            y = new Random().nextInt(frame.mapBlock.height) - 50 + frame.y0;
+        else y = new Random().nextInt(frame.mapBlock.height + 50) - 50 + frame.y0;
 
-        angleDeg = new Random(6323).nextInt(180);
+        angleDeg = new Random().nextInt(180);
         color = Color.orange;
     }
 

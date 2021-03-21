@@ -11,7 +11,7 @@ import java.util.Random;
 public class Main {
     public static void main(String[] args) throws InterruptedException {
 
-        Gene[] population = new Gene[10];
+        Gene[] population = new Gene[1];
 
         int numberOfPopulations = 0;
 
@@ -20,16 +20,18 @@ public class Main {
         boolean isCompleted = false;
 
         while (!isCompleted) {
+            System.out.println("Current population: " + numberOfPopulations);
+            numberOfPopulations++;
+
             selection(population);
 
             rearrangingByScore(population);
 
             isCompleted = checkingIfComplete(population);
 
-            createNewPopulation(population);
+            if (!isCompleted) createNewPopulation(population);
 
-            numberOfPopulations++;
-            System.out.println(numberOfPopulations);
+            System.out.println("Current score = " + population[0].score);
         }
 
         result(population, numberOfPopulations);
@@ -50,7 +52,7 @@ public class Main {
     public static void createNewPopulation(Gene[] population){
         Gene[] newPopulation = new Gene[population.length];
         int genesToRemain = 2;
-        int genesToDelete = 2;
+        int genesToDelete = 1;
         int genesToCrossover = population.length - genesToDelete - genesToRemain;
 
         genesToRemain(genesToRemain, genesToDelete, genesToCrossover, population, newPopulation);
@@ -101,8 +103,6 @@ public class Main {
 
 
     public static void rearrangingByScore(Gene[] population){
-
-
         Arrays.sort(population, new Comparator<Gene>() {
             @Override
             public int compare(Gene o1, Gene o2) {
@@ -118,17 +118,27 @@ public class Main {
         }
     }
 
-    public static void selection(Gene[] population){
+    public static void selection(Gene[] population) throws InterruptedException {
         int timeOfOnePopulation = 4 * 4000;
         int maxSpeed = 17;
         int numberOfRailBlocks = timeOfOnePopulation * maxSpeed;
-        for (Gene gene : population) {
-            int points = runSimulation(gene.nextBlocks, gene.futurePositions, gene.ddt, timeOfOnePopulation, maxSpeed);
+        Thread[] threads = new Thread[population.length];
+        for (int i = 0; i < population.length; i++) {
+            int finalI = i;
+            threads[i] = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    int points = runSimulation(population[finalI].nextBlocks, population[finalI].futurePositions, population[finalI].ddt, timeOfOnePopulation, maxSpeed);
+                    population[finalI].score = points * 1.0 / numberOfRailBlocks * RailBlock.length;
 
-            gene.score = points * 1.0 / numberOfRailBlocks * RailBlock.length;
+                }
+            });
+            threads[i].start();
+
 //            gene.score = (int) Math.pow(gene.score, Math.E);
             //TODO: think about percentage
         }
+        for (Thread thread: threads) thread.join();
     }
 
 

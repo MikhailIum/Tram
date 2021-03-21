@@ -46,16 +46,16 @@ public class Frame extends JFrame implements MouseWheelListener {
         this.setLocation(500, 50);
         this.setVisible(true);
 
-        if (graphicsOn) {
-            this.nextBlocks = 5;
-            this.futurePositions = 9;
-            this.ddt = 0.5506;
-        }
-        else {
+//        if (graphicsOn) {
+//            this.nextBlocks = 5;
+//            this.futurePositions = 9;
+//            this.ddt = 0.5506;
+//        }
+//        else {
             this.nextBlocks = nextBlocks;
             this.futurePositions = futurePositions;
             this.ddt = ddt;
-        }
+//        }
 
         this.timeOfOnePopulation = timeOfOnePopulation;
         this.maxSpeed = maxSpeed;
@@ -89,18 +89,20 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         super.paint(g);
 
+        System.out.println("popopop");
+
         if (tram.y < toMeters(getHeight()) / 2.0)
             y0 = tram.y - this.getHeight() / 2.0 / currentScale;
         x0 = (tram.x - toMeters(this.getWidth()) / 2.0 + RailBlock.width / 2.0);
 
 
-        Random  r = new Random(23532);
+        Random  r = new Random();
         while (railBuilder.rail.getLast().y > y0 - 2 * RailBlock.length)
         {
             int isRotate = r.nextInt(100);
             if (isRotate > 5)
                 railBuilder.move();
-            else railBuilder.rotate(new Random(2342342).nextBoolean());
+            else railBuilder.rotate(new Random().nextBoolean());
         }
 
         while (railBuilder.rail.get(1).y > y0 + toMeters(getHeight())){
@@ -204,6 +206,7 @@ public class Frame extends JFrame implements MouseWheelListener {
         dt = 4;
         DT += 4;
 
+
         if (!tram.currentRailBlock.isRotate) {
                 tram.x += tram.currentRailBlock.direction.dx * (speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2);
                 tram.y += tram.currentRailBlock.direction.dy * (speed * dt / 1000 + acceleration * dt / 1000 * dt / 1000 / 2);
@@ -279,7 +282,7 @@ public class Frame extends JFrame implements MouseWheelListener {
             if (speed < 0) speed = 0;
         }
 
-        if (DT % 500 == 0) people.add(new Person(this));
+        if (DT % 50 == 0) people.add(new Person(this));
         if (DT > timeOfOnePopulation) {
 //            System.out.println("nextBlocks = " + nextBlocks + "; futurePositions = " + futurePositions + "; ddt = " + ddt + ";  points = " + points);
             dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));

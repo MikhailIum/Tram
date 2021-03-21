@@ -8,7 +8,7 @@ public class Gene implements Comparable<Gene>{
     double score;
 
     Gene(){
-        this.nextBlocks = new Random().nextInt();
+        this.nextBlocks = new Random().nextInt(10);
         this.futurePositions = new Random().nextInt();
         this.ddt = new Random().nextDouble();;
     }
