@@ -37,6 +37,7 @@ public class Main {
             System.out.println("futurePositions = " + population[0].futurePositions);
             System.out.println("ddt = " + population[0].ddt);
             System.out.println("numberOfPopulations = " + numberOfPopulations);
+            System.out.println();
         }
 
         result(population, numberOfPopulations);
@@ -51,7 +52,7 @@ public class Main {
         System.out.println("numberOfPopulations = " + numberOfPopulations);
     }
     public static boolean checkingIfComplete(Gene[] population){
-        return population[0].score > 0.7;
+        return population[0].score > 0.9;
     }
 
     public static void createNewPopulation(Gene[] population){
@@ -76,7 +77,7 @@ public class Main {
     }
 
     public static void genesToRemain(int genesToRemain, int genesToDelete, int genesToCrossover, Gene[] population, Gene[] newPopulation){
-        for (int i = 0; i < genesToRemain; i++){
+        for (int i = 0; i < population.length; i++){
             newPopulation[i] = population[i];
         }
     }
@@ -136,7 +137,7 @@ public class Main {
         Arrays.sort(population, new Comparator<Gene>() {
             @Override
             public int compare(Gene o1, Gene o2) {
-                return Double.compare(o1.score, o2.score);
+                return Double.compare(o2.score, o1.score);
             }
         });
     }
@@ -159,7 +160,7 @@ public class Main {
                 @Override
                 public void run() {
                     int points = runSimulation(population[finalI].nextBlocks, population[finalI].futurePositions, population[finalI].ddt, timeOfOnePopulation, maxSpeed);
-                    population[finalI].score = points * 1.0 / numberOfRailBlocks * RailBlock.length;
+                    population[finalI].score = points * 1.0 / (numberOfRailBlocks * RailBlock.length);
 
                 }
             });
