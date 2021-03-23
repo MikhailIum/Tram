@@ -23,7 +23,6 @@ public class Main {
         int numberOfSimulations = 5;
         int timeOfOnePopulation = 2 * 1000;
 
-        System.out.println(numberOfSimulations + " " + timeOfOnePopulation);
 
         while (!isCompleted || numberOfSimulations == 5) {
             System.out.println("Current population: " + numberOfPopulations);
@@ -109,11 +108,17 @@ public class Main {
 
     public static void genesToCrossover(int genesToRemain, int genesToDelete, int genesToCrossover, Gene[] population, Gene[] newPopulation){
         for (int i = genesToRemain; i < population.length - genesToDelete; i++){
-            Gene parent1 = population[new Random().nextInt(genesToCrossover) + genesToRemain];
+            int percentage = new Random().nextInt(100);
+            Gene parent1;
+            do {
+                parent1 = population[new Random().nextInt(genesToCrossover) + genesToRemain];
+            } while (parent1.score * 100 < percentage);
+
+            percentage = new Random().nextInt(100);
             Gene parent2;
             do {
                 parent2 = population[new Random().nextInt(genesToCrossover) + genesToRemain];
-            } while (parent1 == parent2);
+            } while (parent1 == parent2 && percentage > parent2.score * 100);
 
             int r = new Random().nextInt(2) + 1;
             if (r == 1) newPopulation[i].nextBlocks = parent1.nextBlocks;
