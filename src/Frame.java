@@ -13,6 +13,7 @@ import java.util.Random;
 public class Frame extends JFrame implements MouseWheelListener {
 
     double speed = 17;
+    //TODO: double speed = 0;
     double acceleration = 2; // m / sec ^ 2
 
 
@@ -46,16 +47,16 @@ public class Frame extends JFrame implements MouseWheelListener {
         this.setLocation(500, 50);
         this.setVisible(true);
 
-//        if (graphicsOn) {
-//            this.nextBlocks = 5;
-//            this.futurePositions = 9;
-//            this.ddt = 0.5506;
-//        }
-//        else {
+        if (graphicsOn) {
+            this.nextBlocks = 5;
+            this.futurePositions = 10;
+            this.ddt = 0.9466651202590645;
+        }
+        else {
             this.nextBlocks = nextBlocks;
             this.futurePositions = futurePositions;
             this.ddt = ddt;
-//        }
+        }
 
         this.timeOfOnePopulation = timeOfOnePopulation;
         this.maxSpeed = maxSpeed;
@@ -295,7 +296,7 @@ public class Frame extends JFrame implements MouseWheelListener {
                 }
             }
 
-            if (danger) speed -= 2 * acceleration * dt / 1000;
+            if (danger) speed -= acceleration * dt / 1000;
             else if (speed <= maxSpeed) speed += acceleration * dt / 1000;
             if (speed < 0) speed = 0;
         }

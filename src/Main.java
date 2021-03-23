@@ -12,7 +12,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class Main {
     public static void main(String[] args) throws InterruptedException {
 
-        Gene[] population = new Gene[1];
+        Gene[] population = new Gene[5];
 
         int numberOfPopulations = 0;
 
@@ -20,17 +20,31 @@ public class Main {
 
         boolean isCompleted = false;
 
-        while (!isCompleted) {
+        int numberOfSimulations = 5;
+        int timeOfOnePopulation = 2 * 1000;
+
+        System.out.println(numberOfSimulations + " " + timeOfOnePopulation);
+
+        while (!isCompleted || numberOfSimulations == 5) {
             System.out.println("Current population: " + numberOfPopulations);
             numberOfPopulations++;
 
-            selection(population);
+            selection(population, timeOfOnePopulation, numberOfSimulations);
 
             rearrangingByScore(population);
 
-            isCompleted = checkingIfComplete(population);
+            if (checkingIfAlmostCompleted(population)){
+                numberOfSimulations = 10;
+                timeOfOnePopulation = 4 * 1000;
+            }
+            else {
+                numberOfSimulations = 5;
+                timeOfOnePopulation = 2 * 1000;
+            }
 
-            if (!isCompleted) createNewPopulation(population);
+            isCompleted = checkingIfCompleted(population);
+
+            if (!isCompleted || numberOfSimulations == 5) createNewPopulation(population);
 
             System.out.println("Current score = " + population[0].score);
             System.out.println("nextBlocks = " + population[0].nextBlocks);
@@ -51,13 +65,18 @@ public class Main {
         System.out.println("ddt = " + population[0].ddt);
         System.out.println("numberOfPopulations = " + numberOfPopulations);
     }
-    public static boolean checkingIfComplete(Gene[] population){
-        return population[0].score > 0.9;
+
+    public static boolean checkingIfAlmostCompleted(Gene[] population){
+        return (population[0].score > 0.85);
+    }
+
+    public static boolean checkingIfCompleted(Gene[] population){
+        return population[0].score > 0.95;
     }
 
     public static void createNewPopulation(Gene[] population){
         Gene[] newPopulation = new Gene[population.length];
-        int genesToRemain = 2;
+        int genesToRemain = 1;
         int genesToDelete = 1;
         int genesToCrossover = population.length - genesToDelete - genesToRemain;
 
@@ -149,8 +168,7 @@ public class Main {
         }
     }
 
-    public static void selection(Gene[] population) throws InterruptedException {
-        int timeOfOnePopulation = 4 * 1000;
+    public static void selection(Gene[] population, int timeOfOnePopulation, int numberOfSimulations) throws InterruptedException {
         int maxSpeed = 17;
         int numberOfRailBlocks = timeOfOnePopulation * maxSpeed / 2100;
         Thread[] threads = new Thread[population.length];
@@ -159,7 +177,6 @@ public class Main {
             threads[i] = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    int numberOfSimulations = 5;
                     double points = 0;
                     for (int i = 0; i < numberOfSimulations; i++) {
                         points += runSimulation(population[finalI].nextBlocks, population[finalI].futurePositions, population[finalI].ddt, timeOfOnePopulation, maxSpeed);
