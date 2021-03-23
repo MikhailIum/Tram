@@ -12,7 +12,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class Main {
     public static void main(String[] args) throws InterruptedException {
 
-        Gene[] population = new Gene[6];
+        Gene[] population = new Gene[1];
 
         int numberOfPopulations = 0;
 
@@ -83,13 +83,13 @@ public class Main {
     }
 
     public static void genesToDelete(int genesToRemain, int genesToDelete, int genesToCrossover, Gene[] population, Gene[] newPopulation){
-        for (int i = genesToRemain; i < genesToRemain + genesToDelete; i++){
+        for (int i = genesToRemain + genesToCrossover; i < population.length; i++){
             newPopulation[i] = new Gene();
         }
     }
 
     public static void genesToCrossover(int genesToRemain, int genesToDelete, int genesToCrossover, Gene[] population, Gene[] newPopulation){
-        for (int i = population.length - genesToCrossover - genesToDelete; i < population.length; i++){
+        for (int i = genesToRemain; i < population.length - genesToDelete; i++){
             Gene parent1 = population[new Random().nextInt(genesToCrossover) + genesToRemain];
             Gene parent2;
             do {
@@ -150,7 +150,8 @@ public class Main {
     }
 
     public static void selection(Gene[] population) throws InterruptedException {
-        int timeOfOnePopulation = 4 * 4000;
+        int timeOfOnePopulation = 4 * 1000;
+        //TODO: неверно считается score
         int maxSpeed = 17;
         int numberOfRailBlocks = timeOfOnePopulation * maxSpeed;
         Thread[] threads = new Thread[population.length];

@@ -1,5 +1,4 @@
 import java.util.Random;
-import java.util.function.DoubleConsumer;
 
 public class Gene implements Comparable<Gene>{
     int nextBlocks;
@@ -11,6 +10,7 @@ public class Gene implements Comparable<Gene>{
         this.nextBlocks = new Random().nextInt(10);
         this.futurePositions = new Random().nextInt(15);
         this.ddt = new Random().nextDouble();
+        this.score = new Random().nextDouble();
     }
 
     @Override
