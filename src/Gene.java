@@ -15,6 +15,6 @@ public class Gene implements Comparable<Gene>{
 
     @Override
     public int compareTo(Gene o) {
-        return Double.compare(o.score, this.score);
+        return Double.compare(this.score, o.score);
     }
 }

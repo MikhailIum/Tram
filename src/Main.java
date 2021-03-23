@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
@@ -32,6 +33,10 @@ public class Main {
             if (!isCompleted) createNewPopulation(population);
 
             System.out.println("Current score = " + population[0].score);
+            System.out.println("nextBlocks = " + population[0].nextBlocks);
+            System.out.println("futurePositions = " + population[0].futurePositions);
+            System.out.println("ddt = " + population[0].ddt);
+            System.out.println("numberOfPopulations = " + numberOfPopulations);
         }
 
         result(population, numberOfPopulations);
@@ -83,9 +88,12 @@ public class Main {
     }
 
     public static void genesToCrossover(int genesToRemain, int genesToDelete, int genesToCrossover, Gene[] population, Gene[] newPopulation){
-        for (int i = population.length - genesToCrossover; i < population.length; i++){
+        for (int i = population.length - genesToCrossover - genesToDelete; i < population.length; i++){
             Gene parent1 = population[new Random().nextInt(genesToCrossover) + genesToRemain];
-            Gene parent2 = population[new Random().nextInt(genesToCrossover) + genesToRemain];
+            Gene parent2;
+            do {
+                parent2 = population[new Random().nextInt(genesToCrossover) + genesToRemain];
+            } while (parent1 == parent2);
 
             int r = new Random().nextInt(2) + 1;
             if (r == 1) newPopulation[i].nextBlocks = parent1.nextBlocks;
@@ -98,6 +106,28 @@ public class Main {
             r = new Random().nextInt(2) + 1;
             if (r == 1) newPopulation[i].ddt = parent1.ddt;
             else newPopulation[i].ddt = parent2.ddt;
+        }
+
+        mutation(genesToRemain, genesToCrossover, newPopulation);
+    }
+
+    public static void mutation(int genesToRemain, int genesToCrossover, Gene[] newPopulation){
+        double mutationRate = 0.05;
+        for (int i = genesToRemain; i < genesToRemain + genesToCrossover; i++){
+            int mutationChance = new Random().nextInt(100);
+            if (mutationChance < mutationRate * 100){
+                newPopulation[i].nextBlocks = new Random().nextInt(10);
+            }
+
+            mutationChance = new Random().nextInt(100);
+            if (mutationChance < mutationRate * 100){
+                newPopulation[i].futurePositions = new Random().nextInt(15);
+            }
+
+            mutationChance = new Random().nextInt(100);
+            if (mutationChance < mutationRate * 100){
+                newPopulation[i].ddt = new Random().nextDouble();
+            }
         }
     }
 

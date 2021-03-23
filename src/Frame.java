@@ -30,7 +30,7 @@ public class Frame extends JFrame implements MouseWheelListener {
     RailBuilder railBuilder;
     int DT = 0;
     int points = 0;
-    boolean graphicsOn = true;
+    boolean graphicsOn = false;
     int nextBlocks;
     int futurePositions;
     double ddt;
