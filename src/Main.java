@@ -151,18 +151,21 @@ public class Main {
 
     public static void selection(Gene[] population) throws InterruptedException {
         int timeOfOnePopulation = 4 * 1000;
-        //TODO: неверно считается score
         int maxSpeed = 17;
-        int numberOfRailBlocks = timeOfOnePopulation * maxSpeed;
+        int numberOfRailBlocks = timeOfOnePopulation * maxSpeed / 2100;
         Thread[] threads = new Thread[population.length];
         for (int i = 0; i < population.length; i++) {
             int finalI = i;
             threads[i] = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    int points = runSimulation(population[finalI].nextBlocks, population[finalI].futurePositions, population[finalI].ddt, timeOfOnePopulation, maxSpeed);
+                    int numberOfSimulations = 5;
+                    double points = 0;
+                    for (int i = 0; i < numberOfSimulations; i++) {
+                        points += runSimulation(population[finalI].nextBlocks, population[finalI].futurePositions, population[finalI].ddt, timeOfOnePopulation, maxSpeed);
+                    }
+                    points /= numberOfSimulations;
                     population[finalI].score = points * 1.0 / (numberOfRailBlocks * RailBlock.length);
-
                 }
             });
             threads[i].start();

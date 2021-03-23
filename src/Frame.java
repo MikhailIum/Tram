@@ -12,7 +12,7 @@ import java.util.Random;
 
 public class Frame extends JFrame implements MouseWheelListener {
 
-    double speed = 0;
+    double speed = 17;
     double acceleration = 2; // m / sec ^ 2
 
 
@@ -30,7 +30,7 @@ public class Frame extends JFrame implements MouseWheelListener {
     RailBuilder railBuilder;
     int DT = 0;
     int points = 0;
-    boolean graphicsOn = true;
+    boolean graphicsOn = false;
     int nextBlocks;
     int futurePositions;
     double ddt;
@@ -259,15 +259,34 @@ public class Frame extends JFrame implements MouseWheelListener {
                     closestPerson = new Person(person.x, person.y, person.angleDeg);
                 }
 
+            RailBlock nextBlockInfo;
             RailBlock nextBlock;
             boolean danger = false;
             for (int personPosition = 0; personPosition < futurePositions; personPosition++) {
                 for (int i = 0; i <= nextBlocks; i++) {
-                    nextBlock = railBuilder.rail.get(tram.rail.indexOf(tram.currentRailBlock) + i);
+                    nextBlockInfo = railBuilder.rail.get(tram.rail.indexOf(tram.currentRailBlock) + i);
+                    nextBlock = new RailBlock(nextBlockInfo.x, nextBlockInfo.y, nextBlockInfo.direction, nextBlockInfo.ang1, nextBlockInfo.ang2, nextBlockInfo.isRotate, nextBlockInfo.xCenter, nextBlockInfo.yCenter);
 
-                    if ((nextBlock.direction == Direction.UP && closestPerson.x + closestPerson.width >= nextBlock.x - 2 && closestPerson.x <= nextBlock.x + RailBlock.width + 2 && closestPerson.y <= nextBlock.y && closestPerson.y + closestPerson.height >= nextBlock.y - RailBlock.width)
-                    || (nextBlock.direction == Direction.RIGHT && closestPerson.x + closestPerson.width >= nextBlock.x && closestPerson.x <= nextBlock.x + RailBlock.width && closestPerson.y <= nextBlock.y + RailBlock.width + 2 && closestPerson.y + closestPerson.height >= nextBlock.y - 2)
-                    || (nextBlock.direction == Direction.LEFT && closestPerson.x + closestPerson.width >= nextBlock.x - RailBlock.width && closestPerson.x <= nextBlock.x && closestPerson.y <= nextBlock.y + 2 && closestPerson.y + closestPerson.height >= nextBlock.y - RailBlock.width - 2)){
+                    int nextBlockWidth = RailBlock.width;
+                    if (nextBlock.isRotate){
+                        nextBlockWidth++;
+                        if (nextBlock.direction == Direction.RIGHT){
+                            nextBlock.y -= nextBlockWidth;
+                        } else if (nextBlock.direction == Direction.LEFT){
+                            nextBlock.x += RailBlock.width;
+                        } else if (nextBlock.direction == Direction.UP){
+                            if (nextBlock.x + nextBlockWidth == nextBlock.xCenter) {
+                                nextBlock.x -= nextBlockWidth;
+                            } else{
+                                nextBlock.y += RailBlock.width;
+                            }
+                        }
+
+                    }
+
+                    if ((nextBlock.direction == Direction.UP && closestPerson.x + closestPerson.width >= nextBlock.x - 2 && closestPerson.x <= nextBlock.x + nextBlockWidth + 2 && closestPerson.y <= nextBlock.y && closestPerson.y + closestPerson.height >= nextBlock.y - nextBlockWidth)
+                    || (nextBlock.direction == Direction.RIGHT && closestPerson.x + closestPerson.width >= nextBlock.x && closestPerson.x <= nextBlock.x + nextBlockWidth && closestPerson.y <= nextBlock.y + nextBlockWidth + 2 && closestPerson.y + closestPerson.height >= nextBlock.y - 2)
+                    || (nextBlock.direction == Direction.LEFT && closestPerson.x + closestPerson.width >= nextBlock.x - nextBlockWidth && closestPerson.x <= nextBlock.x && closestPerson.y <= nextBlock.y + 2 && closestPerson.y + closestPerson.height >= nextBlock.y - nextBlockWidth - 2)){
                         danger = true;
                     }
 
@@ -281,7 +300,7 @@ public class Frame extends JFrame implements MouseWheelListener {
             if (speed < 0) speed = 0;
         }
 
-        if (DT % 200 == 0) people.add(new Person(this));
+        if (DT % 150 == 0) people.add(new Person(this));
         if (DT > timeOfOnePopulation) {
 //            System.out.println("nextBlocks = " + nextBlocks + "; futurePositions = " + futurePositions + "; ddt = " + ddt + ";  points = " + points);
             dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
@@ -309,10 +328,6 @@ public class Frame extends JFrame implements MouseWheelListener {
 
     double toMetersD(double xPixels){
         return (xPixels / currentScale);
-    }
-
-    int getScore(){
-        return points;
     }
 
 
