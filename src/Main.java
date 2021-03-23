@@ -11,7 +11,7 @@ import java.util.Random;
 public class Main {
     public static void main(String[] args) throws InterruptedException {
 
-        Gene[] population = new Gene[1];
+        Gene[] population = new Gene[6];
 
         int numberOfPopulations = 0;
 
@@ -46,7 +46,7 @@ public class Main {
         System.out.println("numberOfPopulations = " + numberOfPopulations);
     }
     public static boolean checkingIfComplete(Gene[] population){
-        return population[0].score > 0.8;
+        return population[0].score > 0.7;
     }
 
     public static void createNewPopulation(Gene[] population){

@@ -89,7 +89,6 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         super.paint(g);
 
-        System.out.println("popopop");
 
         if (tram.y < toMeters(getHeight()) / 2.0)
             y0 = tram.y - this.getHeight() / 2.0 / currentScale;

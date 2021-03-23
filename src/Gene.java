@@ -9,8 +9,8 @@ public class Gene implements Comparable<Gene>{
 
     Gene(){
         this.nextBlocks = new Random().nextInt(10);
-        this.futurePositions = new Random().nextInt();
-        this.ddt = new Random().nextDouble();;
+        this.futurePositions = new Random().nextInt(15);
+        this.ddt = new Random().nextDouble();
     }
 
     @Override
