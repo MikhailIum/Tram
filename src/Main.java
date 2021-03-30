@@ -12,7 +12,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class Main {
     public static void main(String[] args) throws InterruptedException {
 
-        Gene[] population = new Gene[5];
+        Gene[] population = new Gene[5]; //5
 
         int numberOfPopulations = 0;
 
@@ -20,11 +20,11 @@ public class Main {
 
         boolean isCompleted = false;
 
-        int numberOfSimulations = 5;
-        int timeOfOnePopulation = 2 * 1000;
+        int numberOfSimulations = 10;
+        int timeOfOnePopulation = 4 * 1000;
 
 
-        while (!isCompleted || numberOfSimulations == 5) {
+        while (!isCompleted) {
             System.out.println("Current population: " + numberOfPopulations);
             numberOfPopulations++;
 
@@ -33,17 +33,16 @@ public class Main {
             rearrangingByScore(population);
 
             if (checkingIfAlmostCompleted(population)){
+                numberOfSimulations = 15;
+                timeOfOnePopulation = 16 * 1000;
+                isCompleted = checkingIfCompleted(population);
+            }
+            else {
                 numberOfSimulations = 10;
                 timeOfOnePopulation = 4 * 1000;
             }
-            else {
-                numberOfSimulations = 5;
-                timeOfOnePopulation = 2 * 1000;
-            }
 
-            isCompleted = checkingIfCompleted(population);
-
-            if (!isCompleted || numberOfSimulations == 5) createNewPopulation(population);
+            if (!isCompleted) createNewPopulation(population);
 
             System.out.println("Current score = " + population[0].score);
             System.out.println("nextBlocks = " + population[0].nextBlocks);
@@ -70,7 +69,7 @@ public class Main {
     }
 
     public static boolean checkingIfCompleted(Gene[] population){
-        return population[0].score > 0.95;
+        return population[0].score > 0.98;
     }
 
     public static void createNewPopulation(Gene[] population){
@@ -108,15 +107,16 @@ public class Main {
 
     public static void genesToCrossover(int genesToRemain, int genesToDelete, int genesToCrossover, Gene[] population, Gene[] newPopulation){
         for (int i = genesToRemain; i < population.length - genesToDelete; i++){
-            int percentage = new Random().nextInt(100);
+            int percentage;
             Gene parent1;
             do {
+                percentage = new Random().nextInt(100);
                 parent1 = population[new Random().nextInt(genesToCrossover) + genesToRemain];
             } while (parent1.score * 100 < percentage);
 
-            percentage = new Random().nextInt(100);
             Gene parent2;
             do {
+                percentage = new Random().nextInt(100);
                 parent2 = population[new Random().nextInt(genesToCrossover) + genesToRemain];
             } while (parent1 == parent2 && percentage > parent2.score * 100);
 
@@ -188,12 +188,10 @@ public class Main {
                     }
                     points /= numberOfSimulations;
                     population[finalI].score = points * 1.0 / (numberOfRailBlocks * RailBlock.length);
+
                 }
             });
             threads[i].start();
-
-//            gene.score = (int) Math.pow(gene.score, Math.E);
-            //TODO: think about percentage
         }
         for (Thread thread: threads) thread.join();
     }

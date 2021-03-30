@@ -48,9 +48,9 @@ public class Frame extends JFrame implements MouseWheelListener {
         this.setVisible(true);
 
         if (graphicsOn) {
-            this.nextBlocks = 5;
-            this.futurePositions = 10;
-            this.ddt = 0.9466651202590645;
+            this.nextBlocks = 7;
+            this.futurePositions = 200;
+            this.ddt = 0.5;
         }
         else {
             this.nextBlocks = nextBlocks;
@@ -251,7 +251,7 @@ public class Frame extends JFrame implements MouseWheelListener {
         }
 
         double minDiff = 100000;
-            Person closestPerson = new Person(people.get(0).x, people.get(0).y, people.get(0).angleDeg);
+            Person closestPerson = new Person(1000, 1000, 90);
             for (Person person : people) {
                 double diff = Math.abs((person.x + person.width / 2.0) - (tram.x + tram.width / 2.0)) +
                         Math.abs((person.y + person.height / 2.0) - (tram.y + tram.height / 2.0));
@@ -301,8 +301,8 @@ public class Frame extends JFrame implements MouseWheelListener {
             if (speed < 0) speed = 0;
         }
 
-        if (DT % 150 == 0) people.add(new Person(this));
-        if (DT > timeOfOnePopulation) {
+        if (DT % 200 == 0) people.add(new Person(this));
+        if (DT > timeOfOnePopulation && !graphicsOn) {
 //            System.out.println("nextBlocks = " + nextBlocks + "; futurePositions = " + futurePositions + "; ddt = " + ddt + ";  points = " + points);
             dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         }
