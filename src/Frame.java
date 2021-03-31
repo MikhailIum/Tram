@@ -6,6 +6,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
@@ -17,6 +18,7 @@ public class Frame extends JFrame implements MouseWheelListener {
     double acceleration = 2; // m / sec ^ 2
 
 
+    Random rand = new Random(24728);
     double scaleSpeed = 0.03;
     double x0;
     double y0;
@@ -31,16 +33,19 @@ public class Frame extends JFrame implements MouseWheelListener {
     RailBuilder railBuilder;
     int DT = 0;
     int points = 0;
-    boolean graphicsOn = false;
+    boolean graphicsOn = true;
     int nextBlocks;
     int futurePositions;
     double ddt;
     int timeOfOnePopulation;
     int maxSpeed;
+    Background background = new Background();
+    ArrayList<Tree> trees = new ArrayList<>();
+    ArrayList<Tree> treesToRemove = new ArrayList<>();
 
 
 
-    Frame(int nextBlocks, int futurePositions, double ddt, int timeOfOnePopulation, int maxSpeed){
+    Frame(int nextBlocks, int futurePositions, double ddt, int timeOfOnePopulation, int maxSpeed) throws IOException {
         this.setSize(1000, 1000);
         this.setTitle("Tram");
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -65,7 +70,6 @@ public class Frame extends JFrame implements MouseWheelListener {
         currentScale = targetScale = 20;
         mapBlock = new MapBlock(toMeters(getHeight()), toMeters(getWidth())); // 50, 50
         x0 = 0; // 0 m
-        //y0 = mapBlock.height - toMeters(this.getHeight()); // 50 m
         y0 = 0; // 0 m
         railBuilder = new RailBuilder((int) (x0 + toMeters(this.getWidth()) / 2 - RailBlock.width / 2), (int) (y0 + this.getHeight() / currentScale - 5), Direction.UP); // x = 98 m, y = 195 m
         tram = new Tram(railBuilder.rail);
@@ -74,6 +78,7 @@ public class Frame extends JFrame implements MouseWheelListener {
         people = new ArrayList<>();
         people.add(new Person(this));
         deadPeople = new ArrayList<>();
+
 
         addMouseWheelListener(this);
         createBufferStrategy(2);
@@ -96,13 +101,13 @@ public class Frame extends JFrame implements MouseWheelListener {
         x0 = (tram.x - toMeters(this.getWidth()) / 2.0 + RailBlock.width / 2.0);
 
 
-        Random  r = new Random();
+        Random  r = new Random(3452);
         while (railBuilder.rail.getLast().y > y0 - 2 * RailBlock.length)
         {
             int isRotate = r.nextInt(100);
             if (isRotate > 5)
                 railBuilder.move();
-            else railBuilder.rotate(new Random().nextBoolean());
+            else railBuilder.rotate(new Random(23435).nextBoolean());
         }
 
         while (railBuilder.rail.get(1).y > y0 + toMeters(getHeight())){
@@ -137,11 +142,15 @@ public class Frame extends JFrame implements MouseWheelListener {
         // рельса
         if (graphicsOn){
          for (RailBlock railBlock: railBuilder.rail) {
-             g.setColor(Color.black);
              if (!railBlock.isRotate) {
                  if (railBlock.direction == Direction.UP) {
+                     g.setColor(Color.BLACK);
                      g.drawLine(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0 - RailBlock.length), toPixels(railBlock.x - x0), toPixels(railBlock.y - y0));
                      g.drawLine(toPixels(railBlock.x - x0 + RailBlock.width) - 1, toPixels(railBlock.y - y0 - RailBlock.length), toPixels(railBlock.x - x0 + RailBlock.width) - 1, toPixels(railBlock.y - y0));
+
+                     g.setColor(Color.GRAY);
+                     g.fillRect(toPixels(railBlock.x - x0) + 1, toPixels(railBlock.y - y0 - RailBlock.length), 3, toPixels(railBlock.y - y0) - toPixels(railBlock.y - y0 - RailBlock.length));
+                     g.fillRect(toPixels(railBlock.x - x0 + RailBlock.width) - 2, toPixels(railBlock.y - y0 - RailBlock.length), 2, toPixels(railBlock.y - y0) - toPixels(railBlock.y - y0 - RailBlock.length));
                  } else if (railBlock.direction == Direction.DOWN) {
                      g.drawLine(toPixels(railBlock.x - x0), toPixels(railBlock.y - y0), toPixels(railBlock.x - x0), toPixels(railBlock.y - y0 + RailBlock.length));
                      g.drawLine(toPixels(railBlock.x - x0 - RailBlock.width) - 1, toPixels(railBlock.y - y0), toPixels(railBlock.x - x0 - RailBlock.width) - 1, toPixels(railBlock.y - y0 + RailBlock.length));
@@ -250,6 +259,17 @@ public class Frame extends JFrame implements MouseWheelListener {
             }
         }
 
+        if (!trees.isEmpty()){
+            for (Tree tree: trees) {
+                background.addBackground(g, this, tree);
+                if (tree.x < x0 - 50 || tree.x > x0 + mapBlock.width + 50 || tree.y < y0 - 50 || tree.y > y0 + mapBlock.height){
+                    treesToRemove.add(tree);
+                }
+            }
+        }
+        trees.removeAll(treesToRemove);
+
+
         double minDiff = 100000;
             Person closestPerson = new Person(1000, 1000, 90);
             for (Person person : people) {
@@ -301,11 +321,15 @@ public class Frame extends JFrame implements MouseWheelListener {
             if (speed < 0) speed = 0;
         }
 
-        if (DT % 200 == 0) people.add(new Person(this));
+        if (DT % 200 == 0) {
+            people.add(new Person(this));
+            trees.add(new Tree(this));
+        }
         if (DT > timeOfOnePopulation && !graphicsOn) {
 //            System.out.println("nextBlocks = " + nextBlocks + "; futurePositions = " + futurePositions + "; ddt = " + ddt + ";  points = " + points);
             dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         }
+
 
         g.dispose();                // Освободить все временные ресурсы графики (после этого в нее уже нельзя рисовать)
         bufferStrategy.show();      // Сказать буферизирующей стратегии отрисовать новый буфер (т.е. поменять показываемый и обновляемый буферы местами)

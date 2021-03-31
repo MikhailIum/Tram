@@ -1,6 +1,7 @@
 import jdk.nashorn.internal.runtime.arrays.ArrayLikeIterator;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.rmi.UnexpectedException;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class Main {
     public static void main(String[] args) throws InterruptedException {
 
-        Gene[] population = new Gene[5]; //5
+        Gene[] population = new Gene[1]; //5
 
         int numberOfPopulations = 0;
 
@@ -184,7 +185,11 @@ public class Main {
                 public void run() {
                     double points = 0;
                     for (int i = 0; i < numberOfSimulations; i++) {
-                        points += runSimulation(population[finalI].nextBlocks, population[finalI].futurePositions, population[finalI].ddt, timeOfOnePopulation, maxSpeed);
+                        try {
+                            points += runSimulation(population[finalI].nextBlocks, population[finalI].futurePositions, population[finalI].ddt, timeOfOnePopulation, maxSpeed);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                     points /= numberOfSimulations;
                     population[finalI].score = points * 1.0 / (numberOfRailBlocks * RailBlock.length);
@@ -197,7 +202,7 @@ public class Main {
     }
 
 
-    public static int runSimulation(int nextBlocks, int futurePositions, double ddt, int timeOfOnePopulation, int maxSpeed){
+    public static int runSimulation(int nextBlocks, int futurePositions, double ddt, int timeOfOnePopulation, int maxSpeed) throws IOException {
         Frame frame = new Frame(nextBlocks, futurePositions, ddt, timeOfOnePopulation, maxSpeed);
         while (frame.isShowing()){
             frame.repaint();

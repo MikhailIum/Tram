@@ -23,13 +23,15 @@ public class Person {
 
         //TODO: вернуть
 
+
+
         do {
-            x = new Random().nextInt(frame.mapBlock.width) + frame.x0;
-            y = new Random().nextInt(frame.mapBlock.height) + frame.y0;
+            x = frame.rand.nextInt(frame.mapBlock.width) + frame.x0;
+            y = frame.rand.nextInt(frame.mapBlock.height) + frame.y0;
         } while (((frame.tram.currentRailBlock.direction == Direction.UP && x + width >= frame.tram.currentRailBlock.x - 2 && x <= frame.tram.currentRailBlock.x + RailBlock.width + 2 && y <= frame.tram.currentRailBlock.y && y + height >= frame.tram.currentRailBlock.y - RailBlock.width)
                 || (frame.tram.currentRailBlock.direction == Direction.RIGHT && x + width >= frame.tram.currentRailBlock.x && x <= frame.tram.currentRailBlock.x + RailBlock.width && y <= frame.tram.currentRailBlock.y + RailBlock.width + 2 && y + height >= frame.tram.currentRailBlock.y - 2)
                 || (frame.tram.currentRailBlock.direction == Direction.LEFT && x + width >= frame.tram.currentRailBlock.x - RailBlock.width && x <= frame.tram.currentRailBlock.x && y <= frame.tram.currentRailBlock.y + 2 && y + height >= frame.tram.currentRailBlock.y - RailBlock.width - 2)));
-        angleDeg = new Random().nextInt(180);
+        angleDeg = frame.rand.nextInt(180);
         color = Color.orange;
     }
 
