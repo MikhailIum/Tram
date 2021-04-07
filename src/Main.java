@@ -21,8 +21,8 @@ public class Main {
 
         boolean isCompleted = false;
 
-        int numberOfSimulations = 10;
-        int timeOfOnePopulation = 4 * 1000;
+        int numberOfSimulations = 15;
+        int timeOfOnePopulation = 16 * 1000;
 
 
         while (!isCompleted) {
@@ -33,15 +33,15 @@ public class Main {
 
             rearrangingByScore(population);
 
-            if (checkingIfAlmostCompleted(population)){
-                numberOfSimulations = 15;
-                timeOfOnePopulation = 16 * 1000;
+//            if (checkingIfAlmostCompleted(population)){
+//                numberOfSimulations = 15;
+//                timeOfOnePopulation = 16 * 1000;
                 isCompleted = checkingIfCompleted(population);
-            }
-            else {
-                numberOfSimulations = 10;
-                timeOfOnePopulation = 4 * 1000;
-            }
+//            }
+//            else {
+//                numberOfSimulations = 10;
+//                timeOfOnePopulation = 4 * 1000;
+//            }
 
             if (!isCompleted) createNewPopulation(population);
 
