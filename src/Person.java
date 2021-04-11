@@ -1,13 +1,19 @@
 import com.sun.xml.internal.bind.v2.TODO;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Person {
     double x;
     double y;
-    int height = 1;
-    int width = 1;
+    int height = 6;
+    int width = 6;
     double speed = 1.4;
     double angleDeg;
     double acceleration = 0;
@@ -35,7 +41,7 @@ public class Person {
         color = Color.orange;
     }
 
-    Person(double x, double y, double angleDeg){
+    Person(double x, double y, double angleDeg) throws IOException {
         this.x = x;
         this.y = y;
         this.angleDeg = angleDeg;

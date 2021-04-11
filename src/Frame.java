@@ -1,11 +1,14 @@
 import com.sun.xml.internal.bind.v2.TODO;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -42,6 +45,9 @@ public class Frame extends JFrame implements MouseWheelListener {
     Background background = new Background();
     ArrayList<Tree> trees = new ArrayList<>();
     ArrayList<Tree> treesToRemove = new ArrayList<>();
+    ArrayList<BufferedImage> personImage = new ArrayList<>();
+    double personImagePosition = 0;
+
 
 
 
@@ -79,6 +85,10 @@ public class Frame extends JFrame implements MouseWheelListener {
         people.add(new Person(this));
         deadPeople = new ArrayList<>();
 
+        for (int i = 0; i < 22; i++){
+            personImage.add(ImageIO.read(new File("res/zombie.png")).getSubimage(125 * i, 0, 125, 125));
+        }
+
 
         addMouseWheelListener(this);
         createBufferStrategy(2);
@@ -95,6 +105,7 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         super.paint(g);
 
+        Graphics2D g2d = (Graphics2D) g;
 
         if (tram.y < toMeters(getHeight()) / 2.0)
             y0 = tram.y - this.getHeight() / 2.0 / currentScale;
@@ -190,9 +201,25 @@ public class Frame extends JFrame implements MouseWheelListener {
                      g.fillRect(toPixels(railBlock.x - x0) - toPixels(RailBlock.length), toPixels(railBlock.y - y0 - RailBlock.length) - 1, toPixels(RailBlock.length), 3);
                  }
              } else {
-                 g.setColor(Color.black);
+                 for (int i = 0; i < 1; i++){
+                     g.setColor(new Color(0xB97A57));
+                     double angle = 30;
+                     g2d.rotate(Math.toRadians(angle));
+                     g2d.fillRect(toPixels(railBlock.xCenter - x0), toPixels(railBlock.yCenter - y0), toPixels(RailBlock.length) + 11, 4);
+                     g2d.rotate(-Math.toRadians(angle));
+                 }
+
+                 g.setColor(new Color(0x808080));
+                 g2d.setStroke(new BasicStroke(6));
+
                  g.drawArc(toPixels(railBlock.xCenter - RailBlock.width - RailBuilder.R - x0), toPixels(railBlock.yCenter - RailBlock.width - RailBuilder.R - y0), toPixels(RailBlock.width + RailBuilder.R) * 2, toPixels(RailBlock.width + RailBuilder.R) * 2, railBlock.ang1, railBlock.ang2);
                  g.drawArc(toPixels(railBlock.xCenter - RailBuilder.R - x0), toPixels(railBlock.yCenter - RailBuilder.R - y0), toPixels(RailBuilder.R) * 2, toPixels(RailBuilder.R) * 2, railBlock.ang1, railBlock.ang2);
+
+                 g.setColor(new Color(0xFFC0C0C0, true));
+                 g2d.setStroke(new BasicStroke(3));
+                 g.drawArc(toPixels(railBlock.xCenter - RailBlock.width - RailBuilder.R - x0), toPixels(railBlock.yCenter - RailBlock.width - RailBuilder.R - y0), toPixels(RailBlock.width + RailBuilder.R) * 2, toPixels(RailBlock.width + RailBuilder.R) * 2, railBlock.ang1, railBlock.ang2);
+                 g.drawArc(toPixels(railBlock.xCenter - RailBuilder.R - x0), toPixels(railBlock.yCenter - RailBuilder.R - y0), toPixels(RailBuilder.R) * 2, toPixels(RailBuilder.R) * 2, railBlock.ang1, railBlock.ang2);
+
              }
          }
          }
@@ -206,7 +233,8 @@ public class Frame extends JFrame implements MouseWheelListener {
                 if (person.color == Color.orange) {
                     person.x += dt * 1.0 / 1000 * Math.cos(Math.toRadians(person.angleDeg)) * person.speed + person.acceleration * dt * dt / 1000 / 1000 / 2;
                     person.y += dt * 1.0 / 1000 * Math.sin(Math.toRadians(person.angleDeg)) * person.speed + person.acceleration * dt * dt / 1000 / 1000 / 2;
-                    if (graphicsOn) g.fillOval((int) ((person.x - x0) * currentScale), (int) ((person.y - y0) * currentScale), (int) (person.width * currentScale), (int) (person.height * currentScale));
+                    if (graphicsOn) g.drawImage(personImage.get((int) personImagePosition), (int) ((person.x - x0) * currentScale), (int) ((person.y - y0) * currentScale),(int) (person.width * currentScale), (int) (person.height * currentScale), null );
+//                    if (graphicsOn) g.fillOval((int) ((person.x - x0) * currentScale), (int) ((person.y - y0) * currentScale), (int) (person.width * currentScale), (int) (person.height * currentScale));
                 }
 
 
@@ -300,13 +328,22 @@ public class Frame extends JFrame implements MouseWheelListener {
 
 
         double minDiff = 100000;
-            Person closestPerson = new Person(1000, 1000, 90);
-            for (Person person : people) {
+        Person closestPerson = null;
+        try {
+            closestPerson = new Person(1000, 1000, 90);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        for (Person person : people) {
                 double diff = Math.abs((person.x + person.width / 2.0) - (tram.x + tram.width / 2.0)) +
                         Math.abs((person.y + person.height / 2.0) - (tram.y + tram.height / 2.0));
                 if (diff < minDiff) {
                     minDiff = diff;
-                    closestPerson = new Person(person.x, person.y, person.angleDeg);
+                    try {
+                        closestPerson = new Person(person.x, person.y, person.angleDeg);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
 
             RailBlock nextBlockInfo;
@@ -358,6 +395,10 @@ public class Frame extends JFrame implements MouseWheelListener {
 //            System.out.println("nextBlocks = " + nextBlocks + "; futurePositions = " + futurePositions + "; ddt = " + ddt + ";  points = " + points);
             dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         }
+
+        personImagePosition += 0.1;
+        if (personImagePosition + 1 > personImage.size() * 1.0)
+            personImagePosition = 0;
 
 
         g.dispose();                // Освободить все временные ресурсы графики (после этого в нее уже нельзя рисовать)
