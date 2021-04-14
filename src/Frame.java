@@ -6,6 +6,8 @@ import java.awt.*;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -45,8 +47,7 @@ public class Frame extends JFrame implements MouseWheelListener {
     Background background = new Background();
     ArrayList<Tree> trees = new ArrayList<>();
     ArrayList<Tree> treesToRemove = new ArrayList<>();
-    ArrayList<BufferedImage> personImage = new ArrayList<>();
-    double personImagePosition = 0;
+    BufferedImage tramImg;
 
 
 
@@ -85,9 +86,8 @@ public class Frame extends JFrame implements MouseWheelListener {
         people.add(new Person(this));
         deadPeople = new ArrayList<>();
 
-        for (int i = 0; i < 22; i++){
-            personImage.add(ImageIO.read(new File("res/zombie.png")).getSubimage(125 * i, 0, 125, 125));
-        }
+
+        tramImg = ImageIO.read(new File("res/tram.png"));
 
 
         addMouseWheelListener(this);
@@ -248,8 +248,15 @@ public class Frame extends JFrame implements MouseWheelListener {
                 if (person.color == Color.orange) {
                     person.x += dt * 1.0 / 1000 * Math.cos(Math.toRadians(person.angleDeg)) * person.speed + person.acceleration * dt * dt / 1000 / 1000 / 2;
                     person.y += dt * 1.0 / 1000 * Math.sin(Math.toRadians(person.angleDeg)) * person.speed + person.acceleration * dt * dt / 1000 / 1000 / 2;
-//                    if (graphicsOn) g.drawImage(personImage.get((int) personImagePosition), (int) ((person.x - x0) * currentScale), (int) ((person.y - y0) * currentScale),(int) (person.width * currentScale), (int) (person.height * currentScale), null );
-                    if (graphicsOn) g.fillOval((int) ((person.x - x0) * currentScale), (int) ((person.y - y0) * currentScale), (int) (person.width * currentScale), (int) (person.height * currentScale));
+
+                    double angleInRadians = Math.toRadians(person.angleDeg - 90);
+                    double locationX = person.personImage.getWidth() / 2;
+                    double locationY = person.personImage.getHeight() / 2;
+                    AffineTransform tx = AffineTransform.getRotateInstance(angleInRadians, locationX, locationY);
+                    AffineTransformOp transform = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+
+                    if (graphicsOn) g.drawImage(transform.filter(person.personImage, null), (int) ((person.x - x0) * currentScale), (int) ((person.y - y0) * currentScale), (int) (person.width * currentScale), (int) (person.height * currentScale), null);
+
                 }
 
 
@@ -280,7 +287,32 @@ public class Frame extends JFrame implements MouseWheelListener {
             int y2 = (int) (startY + heightY);
 //            g.fillRect(x1, y1, x2 - x1, y2 - y1);
             // TODO: вернуть трамвай
-            if (graphicsOn) g.fillOval(x1, y1, 40, 40);
+//            if (graphicsOn) g.fillOval(x1, y1, 40, 40);
+        double angleInDegrees = 0;
+            if (graphicsOn){
+                if (!tram.currentRailBlock.isRotate){
+                    if (tram.currentRailBlock.direction == Direction.UP) angleInDegrees = 0;
+                    else if (tram.currentRailBlock.direction == Direction.RIGHT) {
+                        angleInDegrees = 90;
+//                        tram.height = 3;
+//                        tram.width = 5;
+                        //TODO: сделать трамвай хороший!
+                    }
+                    else if (tram.currentRailBlock.direction == Direction.LEFT) {
+                        angleInDegrees = -90;
+//                        tram.height = 3;
+//                        tram.width = 5;
+                    }
+
+                }
+            }
+
+        double angleInRadians = Math.toRadians(angleInDegrees);
+        double locationX = tramImg.getWidth() / 2;
+        double locationY = tramImg.getHeight() / 2;
+        AffineTransform tx = AffineTransform.getRotateInstance(angleInRadians, locationX, locationY);
+        AffineTransformOp transform = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+        g.drawImage(transform.filter(tramImg, null), x1 - 10, y1, toPixels(tram.width), toPixels(tram.height), null);
 
 //        dt = System.currentTimeMillis() - prevTime;
 
@@ -403,7 +435,11 @@ public class Frame extends JFrame implements MouseWheelListener {
         }
 
         if (DT % 200 == 0) {
-            people.add(new Person(this));
+            try {
+                people.add(new Person(this));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             trees.add(new Tree(this));
         }
         if (DT > timeOfOnePopulation && !graphicsOn) {
@@ -411,9 +447,7 @@ public class Frame extends JFrame implements MouseWheelListener {
             dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         }
 
-        personImagePosition += 0.1;
-        if (personImagePosition + 1 > personImage.size() * 1.0)
-            personImagePosition = 0;
+
 
 
         g.dispose();                // Освободить все временные ресурсы графики (после этого в нее уже нельзя рисовать)

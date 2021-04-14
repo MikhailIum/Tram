@@ -18,9 +18,10 @@ public class Person {
     double angleDeg;
     double acceleration = 0;
     Color color;
+    BufferedImage personImage;
 
 
-    Person(Frame frame){
+    Person(Frame frame) throws IOException {
 //        x = new Random().nextInt(frame.mapBlock.width + 100) - 50  + frame.x0;
 //
 //        if (x >= frame.x0 && x <= frame.x0 + frame.getWidth())
@@ -39,6 +40,10 @@ public class Person {
                 || (frame.tram.currentRailBlock.direction == Direction.LEFT && x + width >= frame.tram.currentRailBlock.x - RailBlock.width && x <= frame.tram.currentRailBlock.x && y <= frame.tram.currentRailBlock.y + 2 && y + height >= frame.tram.currentRailBlock.y - RailBlock.width - 2)));
         angleDeg = frame.rand.nextInt(180);
         color = Color.orange;
+
+        int randomPerson = new Random().nextInt(7);
+        System.out.println(randomPerson);
+        personImage = ImageIO.read(new File("res/people.png")).getSubimage(0,19 * randomPerson, 18, 17);
     }
 
     Person(double x, double y, double angleDeg) throws IOException {
