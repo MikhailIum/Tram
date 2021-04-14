@@ -12,8 +12,8 @@ import java.util.Random;
 public class Person {
     double x;
     double y;
-    int height = 6;
-    int width = 6;
+    int height = 2;
+    int width = 2;
     double speed = 1.4;
     double angleDeg;
     double acceleration = 0;

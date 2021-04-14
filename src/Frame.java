@@ -201,12 +201,27 @@ public class Frame extends JFrame implements MouseWheelListener {
                      g.fillRect(toPixels(railBlock.x - x0) - toPixels(RailBlock.length), toPixels(railBlock.y - y0 - RailBlock.length) - 1, toPixels(RailBlock.length), 3);
                  }
              } else {
-                 for (int i = 0; i < 1; i++){
+                 int changeX = 1;
+                 int changeY = 1;
+                 if (railBlock.direction == Direction.LEFT){
+                     changeX = -1;
+                 } else if (railBlock.direction == Direction.UP && railBlock != railBuilder.rail.getFirst()) {
+                     if (railBuilder.rail.get(railBuilder.rail.indexOf(railBlock) - 1).direction == Direction.RIGHT) {
+                        changeX = -1;
+                        changeY = -1;
+                     }
+                     else{
+                         changeY = -1;
+                     }
+                 }
+                 for (int alpha = 0; alpha <= 90; alpha += 30){
                      g.setColor(new Color(0xB97A57));
-                     double angle = 30;
-                     g2d.rotate(Math.toRadians(angle));
-                     g2d.fillRect(toPixels(railBlock.xCenter - x0), toPixels(railBlock.yCenter - y0), toPixels(RailBlock.length) + 11, 4);
-                     g2d.rotate(-Math.toRadians(angle));
+                     g2d.setStroke(new BasicStroke(4));
+
+                     int xStart = toPixels(railBlock.xCenter - x0) - changeX * 9;
+                     int yStart = toPixels(railBlock.yCenter - y0) - changeY * 10;
+                     g.drawLine(xStart,yStart ,(int) (xStart - changeX * Math.cos(Math.toRadians(alpha)) * (toPixels(RailBlock.length) + 11)), (int) (yStart - changeY * Math.sin(Math.toRadians(alpha)) * (toPixels(RailBlock.length) + 11)));
+                     g2d.setStroke(new BasicStroke(1));
                  }
 
                  g.setColor(new Color(0x808080));
@@ -233,8 +248,8 @@ public class Frame extends JFrame implements MouseWheelListener {
                 if (person.color == Color.orange) {
                     person.x += dt * 1.0 / 1000 * Math.cos(Math.toRadians(person.angleDeg)) * person.speed + person.acceleration * dt * dt / 1000 / 1000 / 2;
                     person.y += dt * 1.0 / 1000 * Math.sin(Math.toRadians(person.angleDeg)) * person.speed + person.acceleration * dt * dt / 1000 / 1000 / 2;
-                    if (graphicsOn) g.drawImage(personImage.get((int) personImagePosition), (int) ((person.x - x0) * currentScale), (int) ((person.y - y0) * currentScale),(int) (person.width * currentScale), (int) (person.height * currentScale), null );
-//                    if (graphicsOn) g.fillOval((int) ((person.x - x0) * currentScale), (int) ((person.y - y0) * currentScale), (int) (person.width * currentScale), (int) (person.height * currentScale));
+//                    if (graphicsOn) g.drawImage(personImage.get((int) personImagePosition), (int) ((person.x - x0) * currentScale), (int) ((person.y - y0) * currentScale),(int) (person.width * currentScale), (int) (person.height * currentScale), null );
+                    if (graphicsOn) g.fillOval((int) ((person.x - x0) * currentScale), (int) ((person.y - y0) * currentScale), (int) (person.width * currentScale), (int) (person.height * currentScale));
                 }
 
 
