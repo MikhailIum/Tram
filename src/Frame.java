@@ -18,12 +18,11 @@ import java.util.Random;
 
 public class Frame extends JFrame implements MouseWheelListener {
 
-    double speed = 17;
-    //TODO: double speed = 0;
+    double speed = 0;
     double acceleration = 2; // m / sec ^ 2
 
 
-    Random rand = new Random(24728);
+    Random rand = new Random();
     double scaleSpeed = 0.03;
     double x0;
     double y0;
@@ -48,6 +47,8 @@ public class Frame extends JFrame implements MouseWheelListener {
     ArrayList<Tree> trees = new ArrayList<>();
     ArrayList<Tree> treesToRemove = new ArrayList<>();
     BufferedImage tramImg;
+    double personImageCounter = 0;
+    double angleInDegrees = 0;
 
 
 
@@ -89,6 +90,8 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         tramImg = ImageIO.read(new File("res/tram.png"));
 
+        TramMenu menu = new TramMenu();
+
 
         addMouseWheelListener(this);
         createBufferStrategy(2);
@@ -112,13 +115,13 @@ public class Frame extends JFrame implements MouseWheelListener {
         x0 = (tram.x - toMeters(this.getWidth()) / 2.0 + RailBlock.width / 2.0);
 
 
-        Random  r = new Random(3452);
+        Random  r = new Random();
         while (railBuilder.rail.getLast().y > y0 - 2 * RailBlock.length)
         {
             int isRotate = r.nextInt(100);
             if (isRotate > 5)
                 railBuilder.move();
-            else railBuilder.rotate(new Random().nextBoolean()); // 23435
+            else railBuilder.rotate(new Random().nextBoolean());
         }
 
         while (railBuilder.rail.get(1).y > y0 + toMeters(getHeight())){
@@ -249,13 +252,15 @@ public class Frame extends JFrame implements MouseWheelListener {
                     person.x += dt * 1.0 / 1000 * Math.cos(Math.toRadians(person.angleDeg)) * person.speed + person.acceleration * dt * dt / 1000 / 1000 / 2;
                     person.y += dt * 1.0 / 1000 * Math.sin(Math.toRadians(person.angleDeg)) * person.speed + person.acceleration * dt * dt / 1000 / 1000 / 2;
 
+                    BufferedImage personImage = person.personImages.get((int) personImageCounter);
+
                     double angleInRadians = Math.toRadians(person.angleDeg - 90);
-                    double locationX = person.personImage.getWidth() / 2;
-                    double locationY = person.personImage.getHeight() / 2;
+                    double locationX = personImage.getWidth() / 2;
+                    double locationY = personImage.getHeight() / 2;
                     AffineTransform tx = AffineTransform.getRotateInstance(angleInRadians, locationX, locationY);
                     AffineTransformOp transform = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
 
-                    if (graphicsOn) g.drawImage(transform.filter(person.personImage, null), (int) ((person.x - x0) * currentScale), (int) ((person.y - y0) * currentScale), (int) (person.width * currentScale), (int) (person.height * currentScale), null);
+                    if (graphicsOn) g.drawImage(transform.filter(personImage, null), (int) ((person.x - x0) * currentScale), (int) ((person.y - y0) * currentScale), (int) (person.width * currentScale), (int) (person.height * currentScale), null);
 
                 }
 
@@ -285,34 +290,51 @@ public class Frame extends JFrame implements MouseWheelListener {
             int y1 = (int) startY;
             int x2 = (int) (startX + widthX);
             int y2 = (int) (startY + heightY);
-//            g.fillRect(x1, y1, x2 - x1, y2 - y1);
-            // TODO: вернуть трамвай
-//            if (graphicsOn) g.fillOval(x1, y1, 40, 40);
-        double angleInDegrees = 0;
             if (graphicsOn){
                 if (!tram.currentRailBlock.isRotate){
-                    if (tram.currentRailBlock.direction == Direction.UP) angleInDegrees = 0;
+                    if (tram.currentRailBlock.direction == Direction.UP){
+                        angleInDegrees = 0;
+//                        tram.ImgHeight = 6;
+//                        tram.ImgWidth = 8;
+                    }
                     else if (tram.currentRailBlock.direction == Direction.RIGHT) {
                         angleInDegrees = 90;
-//                        tram.height = 3;
-//                        tram.width = 5;
+//                        tram.ImgHeight = 8;
+//                        tram.ImgWidth = 6;
                         //TODO: сделать трамвай хороший!
                     }
                     else if (tram.currentRailBlock.direction == Direction.LEFT) {
                         angleInDegrees = -90;
-//                        tram.height = 3;
-//                        tram.width = 5;
+//                        tram.ImgHeight = 8;
+//                        tram.ImgWidth = 6;
                     }
 
                 }
+                else if (tram.currentRailBlock.direction == Direction.LEFT){
+                    angleInDegrees -= 1.9;
+                } else if (tram.currentRailBlock.direction == Direction.RIGHT){
+                    angleInDegrees += 1.9;
+                } else if (railBuilder.rail.get(railBuilder.rail.indexOf(tram.currentRailBlock) - 1).direction == Direction.RIGHT){
+                    angleInDegrees -= 1.9;
+                } else {
+                    angleInDegrees += 1.9;
+                }
+                if (Math.abs(angleInDegrees) > 90) angleInDegrees = 90;
             }
 
-        double angleInRadians = Math.toRadians(angleInDegrees);
-        double locationX = tramImg.getWidth() / 2;
-        double locationY = tramImg.getHeight() / 2;
-        AffineTransform tx = AffineTransform.getRotateInstance(angleInRadians, locationX, locationY);
-        AffineTransformOp transform = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
-        g.drawImage(transform.filter(tramImg, null), x1 - 10, y1, toPixels(tram.width), toPixels(tram.height), null);
+//        double angleInRadians = Math.toRadians(angleInDegrees);
+//        double locationX = tramImg.getWidth() / 2;
+//        double locationY = tramImg.getHeight() / 2;
+//        AffineTransform tx = AffineTransform.getRotateInstance(angleInRadians, locationX, locationY);
+//        AffineTransformOp transform = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+
+        AffineTransform tx = new AffineTransform();
+        double scale = (double) toPixels(tram.ImgWidth) / tramImg.getWidth();
+        tx.rotate(Math.toRadians(angleInDegrees), scale * tramImg.getWidth() / 2.0, scale * tramImg.getHeight() / 2.0);
+        tx.scale(scale, scale);
+        AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+
+        g.drawImage(op.filter(tramImg, null), x1 - 55, y1 - 57, null);
 
 //        dt = System.currentTimeMillis() - prevTime;
 
@@ -374,65 +396,64 @@ public class Frame extends JFrame implements MouseWheelListener {
         trees.removeAll(treesToRemove);
 
 
-        double minDiff = 100000;
-        Person closestPerson = null;
-        try {
-            closestPerson = new Person(1000, 1000, 90);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        for (Person person : people) {
-                double diff = Math.abs((person.x + person.width / 2.0) - (tram.x + tram.width / 2.0)) +
-                        Math.abs((person.y + person.height / 2.0) - (tram.y + tram.height / 2.0));
-                if (diff < minDiff) {
-                    minDiff = diff;
-                    try {
-                        closestPerson = new Person(person.x, person.y, person.angleDeg);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+//        double minDiff = 100000;
+//        Person closestPerson = null;
+//        try {
+//            closestPerson = new Person(1000, 1000, 90);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        for (Person person : people) {
+//                double diff = Math.abs((person.x + person.width / 2.0) - (tram.x + tram.width / 2.0)) +
+//                        Math.abs((person.y + person.height / 2.0) - (tram.y + tram.height / 2.0));
+//                if (diff < minDiff) {
+//                    minDiff = diff;
+//                    try {
+//                        closestPerson = new Person(person.x, person.y, person.angleDeg);
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//
+//            RailBlock nextBlockInfo;
+//            RailBlock nextBlock;
+//            boolean danger = false;
+//            for (int personPosition = 0; personPosition < futurePositions; personPosition++) {
+//                for (int i = 0; i <= nextBlocks; i++) {
+//                    nextBlockInfo = railBuilder.rail.get(tram.rail.indexOf(tram.currentRailBlock) + i);
+//                    nextBlock = new RailBlock(nextBlockInfo.x, nextBlockInfo.y, nextBlockInfo.direction, nextBlockInfo.ang1, nextBlockInfo.ang2, nextBlockInfo.isRotate, nextBlockInfo.xCenter, nextBlockInfo.yCenter);
+//
+//                    int nextBlockWidth = RailBlock.width;
+//                    if (nextBlock.isRotate){
+//                        nextBlockWidth++;
+//                        if (nextBlock.direction == Direction.RIGHT){
+//                            nextBlock.y -= nextBlockWidth;
+//                        } else if (nextBlock.direction == Direction.LEFT){
+//                            nextBlock.x += RailBlock.width;
+//                        } else if (nextBlock.direction == Direction.UP){
+//                            if (nextBlock.x + nextBlockWidth == nextBlock.xCenter) {
+//                                nextBlock.x -= nextBlockWidth;
+//                            } else{
+//                                nextBlock.y += RailBlock.width;
+//                            }
+//                        }
+//
+//                    }
+//
+//                    if ((nextBlock.direction == Direction.UP && closestPerson.x + closestPerson.width >= nextBlock.x - 2 && closestPerson.x <= nextBlock.x + nextBlockWidth + 2 && closestPerson.y <= nextBlock.y && closestPerson.y + closestPerson.height >= nextBlock.y - nextBlockWidth)
+//                    || (nextBlock.direction == Direction.RIGHT && closestPerson.x + closestPerson.width >= nextBlock.x && closestPerson.x <= nextBlock.x + nextBlockWidth && closestPerson.y <= nextBlock.y + nextBlockWidth + 2 && closestPerson.y + closestPerson.height >= nextBlock.y - 2)
+//                    || (nextBlock.direction == Direction.LEFT && closestPerson.x + closestPerson.width >= nextBlock.x - nextBlockWidth && closestPerson.x <= nextBlock.x && closestPerson.y <= nextBlock.y + 2 && closestPerson.y + closestPerson.height >= nextBlock.y - nextBlockWidth - 2)){
+//                        danger = true;
+//                    }
+//
+//                    closestPerson.x += ddt / 1000 * Math.cos(Math.toRadians(closestPerson.angleDeg)) * closestPerson.speed + closestPerson.acceleration * ddt * ddt / 1000 / 1000 / 2;
+//                    closestPerson.y += ddt / 1000 * Math.sin(Math.toRadians(closestPerson.angleDeg)) * closestPerson.speed + closestPerson.acceleration * ddt * ddt / 1000 / 1000 / 2;
+//                }
+//            }
 
-            RailBlock nextBlockInfo;
-            RailBlock nextBlock;
-            boolean danger = false;
-            for (int personPosition = 0; personPosition < futurePositions; personPosition++) {
-                for (int i = 0; i <= nextBlocks; i++) {
-                    nextBlockInfo = railBuilder.rail.get(tram.rail.indexOf(tram.currentRailBlock) + i);
-                    nextBlock = new RailBlock(nextBlockInfo.x, nextBlockInfo.y, nextBlockInfo.direction, nextBlockInfo.ang1, nextBlockInfo.ang2, nextBlockInfo.isRotate, nextBlockInfo.xCenter, nextBlockInfo.yCenter);
+//            if (danger) speed -= acceleration * dt / 1000;
 
-                    int nextBlockWidth = RailBlock.width;
-                    if (nextBlock.isRotate){
-                        nextBlockWidth++;
-                        if (nextBlock.direction == Direction.RIGHT){
-                            nextBlock.y -= nextBlockWidth;
-                        } else if (nextBlock.direction == Direction.LEFT){
-                            nextBlock.x += RailBlock.width;
-                        } else if (nextBlock.direction == Direction.UP){
-                            if (nextBlock.x + nextBlockWidth == nextBlock.xCenter) {
-                                nextBlock.x -= nextBlockWidth;
-                            } else{
-                                nextBlock.y += RailBlock.width;
-                            }
-                        }
-
-                    }
-
-                    if ((nextBlock.direction == Direction.UP && closestPerson.x + closestPerson.width >= nextBlock.x - 2 && closestPerson.x <= nextBlock.x + nextBlockWidth + 2 && closestPerson.y <= nextBlock.y && closestPerson.y + closestPerson.height >= nextBlock.y - nextBlockWidth)
-                    || (nextBlock.direction == Direction.RIGHT && closestPerson.x + closestPerson.width >= nextBlock.x && closestPerson.x <= nextBlock.x + nextBlockWidth && closestPerson.y <= nextBlock.y + nextBlockWidth + 2 && closestPerson.y + closestPerson.height >= nextBlock.y - 2)
-                    || (nextBlock.direction == Direction.LEFT && closestPerson.x + closestPerson.width >= nextBlock.x - nextBlockWidth && closestPerson.x <= nextBlock.x && closestPerson.y <= nextBlock.y + 2 && closestPerson.y + closestPerson.height >= nextBlock.y - nextBlockWidth - 2)){
-                        danger = true;
-                    }
-
-                    closestPerson.x += ddt / 1000 * Math.cos(Math.toRadians(closestPerson.angleDeg)) * closestPerson.speed + closestPerson.acceleration * ddt * ddt / 1000 / 1000 / 2;
-                    closestPerson.y += ddt / 1000 * Math.sin(Math.toRadians(closestPerson.angleDeg)) * closestPerson.speed + closestPerson.acceleration * ddt * ddt / 1000 / 1000 / 2;
-                }
-            }
-
-            if (danger) speed -= acceleration * dt / 1000;
-            else if (speed <= maxSpeed) speed += acceleration * dt / 1000;
-            if (speed < 0) speed = 0;
-        }
+//        }
 
         if (DT % 200 == 0) {
             try {
@@ -442,12 +463,15 @@ public class Frame extends JFrame implements MouseWheelListener {
             }
             trees.add(new Tree(this));
         }
-        if (DT > timeOfOnePopulation && !graphicsOn) {
-//            System.out.println("nextBlocks = " + nextBlocks + "; futurePositions = " + futurePositions + "; ddt = " + ddt + ";  points = " + points);
-            dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
-        }
+//        if (DT > timeOfOnePopulation && !graphicsOn) {
+//            dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+//        }
 
 
+
+        personImageCounter += 0.05;
+        if (personImageCounter > 3)
+            personImageCounter = 0;
 
 
         g.dispose();                // Освободить все временные ресурсы графики (после этого в нее уже нельзя рисовать)

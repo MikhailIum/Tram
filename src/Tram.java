@@ -3,8 +3,12 @@ import java.util.LinkedList;
 public class Tram {
     double x;
     double y;
-    int width = 3;
-    int height = 5;
+
+    int width = 2;
+    int height = 2;
+
+    double ImgWidth = 8;
+    double ImgHeight = 6;
     //TODO: height = 35
     double ang;
     RailBlock currentRailBlock;
