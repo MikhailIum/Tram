@@ -49,6 +49,10 @@ public class Frame extends JFrame implements MouseWheelListener {
     BufferedImage tramImg;
     double personImageCounter = 0;
     double angleInDegrees = 0;
+    TramMenu menu = new TramMenu(this);
+    long prevTime;
+
+
 
 
 
@@ -59,6 +63,7 @@ public class Frame extends JFrame implements MouseWheelListener {
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.setLocation(500, 50);
         this.setVisible(true);
+
 
         if (graphicsOn) {
             this.nextBlocks = 7;
@@ -81,7 +86,7 @@ public class Frame extends JFrame implements MouseWheelListener {
         y0 = 0; // 0 m
         railBuilder = new RailBuilder((int) (x0 + toMeters(this.getWidth()) / 2 - RailBlock.width / 2), (int) (y0 + this.getHeight() / currentScale - 5), Direction.UP); // x = 98 m, y = 195 m
         tram = new Tram(railBuilder.rail);
-        //prevTime = System.currentTimeMillis();
+        prevTime = System.currentTimeMillis();
 
         people = new ArrayList<>();
         people.add(new Person(this));
@@ -90,7 +95,6 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         tramImg = ImageIO.read(new File("res/tram.png"));
 
-        TramMenu menu = new TramMenu();
 
 
         addMouseWheelListener(this);
@@ -108,7 +112,12 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         super.paint(g);
 
+        RailBlock previousRailBlock = tram.currentRailBlock;
+
+
+
         Graphics2D g2d = (Graphics2D) g;
+
 
         if (tram.y < toMeters(getHeight()) / 2.0)
             y0 = tram.y - this.getHeight() / 2.0 / currentScale;
@@ -294,32 +303,28 @@ public class Frame extends JFrame implements MouseWheelListener {
                 if (!tram.currentRailBlock.isRotate){
                     if (tram.currentRailBlock.direction == Direction.UP){
                         angleInDegrees = 0;
-//                        tram.ImgHeight = 6;
-//                        tram.ImgWidth = 8;
                     }
                     else if (tram.currentRailBlock.direction == Direction.RIGHT) {
                         angleInDegrees = 90;
-//                        tram.ImgHeight = 8;
-//                        tram.ImgWidth = 6;
-                        //TODO: сделать трамвай хороший!
                     }
                     else if (tram.currentRailBlock.direction == Direction.LEFT) {
                         angleInDegrees = -90;
-//                        tram.ImgHeight = 8;
-//                        tram.ImgWidth = 6;
                     }
 
                 }
                 else if (tram.currentRailBlock.direction == Direction.LEFT){
                     angleInDegrees -= 1.9;
+                    if (angleInDegrees < -90) angleInDegrees = -90;
                 } else if (tram.currentRailBlock.direction == Direction.RIGHT){
                     angleInDegrees += 1.9;
+                    if (angleInDegrees > 90) angleInDegrees = 90;
                 } else if (railBuilder.rail.get(railBuilder.rail.indexOf(tram.currentRailBlock) - 1).direction == Direction.RIGHT){
                     angleInDegrees -= 1.9;
+                    if (angleInDegrees < 0) angleInDegrees = 0;
                 } else {
                     angleInDegrees += 1.9;
+                    if (angleInDegrees > 0) angleInDegrees = 0;
                 }
-                if (Math.abs(angleInDegrees) > 90) angleInDegrees = 90;
             }
 
 //        double angleInRadians = Math.toRadians(angleInDegrees);
@@ -336,9 +341,9 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         g.drawImage(op.filter(tramImg, null), x1 - 55, y1 - 57, null);
 
-//        dt = System.currentTimeMillis() - prevTime;
+        dt = System.currentTimeMillis() - prevTime;
 
-        dt = 4;
+
         DT += 4;
 
 
@@ -455,6 +460,14 @@ public class Frame extends JFrame implements MouseWheelListener {
 
 //        }
 
+        // меню
+        try {
+            menu.drawMenu(this, g);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
         if (DT % 200 == 0) {
             try {
                 people.add(new Person(this));
@@ -462,10 +475,24 @@ public class Frame extends JFrame implements MouseWheelListener {
                 e.printStackTrace();
             }
             trees.add(new Tree(this));
+
         }
+
+        if (DT > 10000){
+            menu.gameOver = true;
+        }
+
+        if (speed < 17)
+            speed -= acceleration * dt / 1000;
+        if (speed < 0) speed = 0;
+
 //        if (DT > timeOfOnePopulation && !graphicsOn) {
 //            dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 //        }
+
+        if (!previousRailBlock.equals(tram.currentRailBlock)){
+            menu.points();
+        }
 
 
 
@@ -477,7 +504,7 @@ public class Frame extends JFrame implements MouseWheelListener {
         g.dispose();                // Освободить все временные ресурсы графики (после этого в нее уже нельзя рисовать)
         bufferStrategy.show();      // Сказать буферизирующей стратегии отрисовать новый буфер (т.е. поменять показываемый и обновляемый буферы местами)
 
-        //prevTime = System.currentTimeMillis();
+        prevTime = System.currentTimeMillis();
 
         repaint();
     }

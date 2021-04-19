@@ -63,6 +63,7 @@ public class Person {
             frame.deadPeople.add(this);
             color = Color.RED;
             frame.points -= 50;
+            frame.menu.deadPerson();
         }
     }
 }

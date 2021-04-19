@@ -9,7 +9,6 @@ public class Tram {
 
     double ImgWidth = 8;
     double ImgHeight = 6;
-    //TODO: height = 35
     double ang;
     RailBlock currentRailBlock;
     LinkedList<RailBlock> rail;
