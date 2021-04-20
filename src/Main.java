@@ -13,13 +13,18 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException, IOException {
-        Frame frame = new Frame(0,0,0,0,17);
+        while(true) {
+            Frame frame = new Frame(0, 0, 0, 0, 17);
 
-        KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-        manager.addKeyEventDispatcher(new KeyEventDispatcher(frame));
+            KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+            manager.addKeyEventDispatcher(new KeyEventDispatcher(frame));
 
-        while (true) frame.repaint();
+            while (!frame.isClosed()) frame.repaint();
 
+            if (!frame.isReallyAgainButtonWasPressedButNotTheCloseCrossWasPressed) {
+                break;
+            }
+        }
     }
 
 }
