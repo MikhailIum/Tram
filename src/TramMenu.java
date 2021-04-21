@@ -112,10 +112,8 @@ public class TramMenu {
 }
 
     public void restart(Frame frame) throws IOException {
-        gameOver = false;
-        points = 0;
+        frame.isRestarted = true;
         frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-        frame = new Frame(0,0,0,0,17);
     }
 
     public void bestScore() throws FileNotFoundException {

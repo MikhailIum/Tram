@@ -1,4 +1,5 @@
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 public class KeyEventDispatcher implements java.awt.KeyEventDispatcher {
@@ -21,12 +22,9 @@ public class KeyEventDispatcher implements java.awt.KeyEventDispatcher {
                 frame.speed -= 0.1;
             }
         } else {
-            if (e.getID() == KeyEvent.KEY_PRESSED){
-                try {
-                    frame.menu.restart(frame);
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                }
+            if (e.getID() == KeyEvent.KEY_TYPED){
+                    frame.isRestarted = true;
+                    frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
             }
         }
 

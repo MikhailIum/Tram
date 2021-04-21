@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferStrategy;
@@ -51,7 +52,8 @@ public class Frame extends JFrame implements MouseWheelListener {
     double angleInDegrees = 0;
     TramMenu menu = new TramMenu(this);
     long prevTime;
-
+    boolean isClosed = false;
+    boolean isRestarted = false;
 
 
 
@@ -61,8 +63,61 @@ public class Frame extends JFrame implements MouseWheelListener {
         this.setSize(1000, 1000);
         this.setTitle("Tram");
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        this.addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                isClosed = true;
+
+                if (isRestarted){
+                    isRestarted = false;
+                }
+                else {
+                    System.exit(0);
+                }
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowIconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowActivated(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+
+            }
+        });
+        //TODO: delete
+        JButton button = new JButton();
+        JPanel panel = new JPanel();
+        panel.add(button);
+        this.add(panel);
+
+
         this.setLocation(500, 50);
         this.setVisible(true);
+
+
+
 
 
         if (graphicsOn) {
@@ -478,7 +533,7 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         }
 
-        if (DT > 10000){
+        if (DT > 1000){
             menu.gameOver = true;
         }
 
@@ -490,7 +545,7 @@ public class Frame extends JFrame implements MouseWheelListener {
 //            dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 //        }
 
-        if (!previousRailBlock.equals(tram.currentRailBlock)){
+        if (!previousRailBlock.equals(tram.currentRailBlock) && !menu.gameOver){
             menu.points();
         }
 
