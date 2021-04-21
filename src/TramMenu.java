@@ -18,7 +18,9 @@ public class TramMenu {
     String bestResultString;
     int numberOfBestScoreDigits;
     JPanel panel = new JPanel();
-    // TODO: resetBtn
+    int restartImageX = 0;
+    int restartImageY = 0;
+    BufferedImage restartImage = ImageIO.read(new File("res/resetBtnImage.png"));
 
 
     TramMenu(Frame frame) throws IOException {
@@ -81,15 +83,21 @@ public class TramMenu {
             g.drawString(pointsString, frame.getWidth() / 2 - 10 * (numberOfScoreDigits - 1), frame.getWidth() / 2); // 305
             numberOfScoreDigits = 0;
 
+            restartImageX = frame.getWidth() / 2 - 95;
+            restartImageY = frame.getHeight() / 2 - 75 + resetImage.getHeight();
+            g.drawImage(restartImage, restartImageX,restartImageY, null);
+
+
+
             // кнопка рестарта
-            ImageIcon resetBtnImage = new ImageIcon("res/resetBtnImage.png");
+//            ImageIcon resetBtnImage = new ImageIcon("res/resetBtnImage.png");
 
-            resetBtn.setSize(resetBtnImage.getIconWidth(), resetBtnImage.getIconHeight());
-            resetBtn.setBorder(null);
-            resetBtn.setLocation(135,450);
-            resetBtn.setIcon(resetBtnImage);
+//            resetBtn.setSize(resetBtnImage.getIconWidth(), resetBtnImage.getIconHeight());
+//            resetBtn.setBorder(null);
+//            resetBtn.setLocation(135,450);
+//            resetBtn.setIcon(resetBtnImage);
 
-            panel.add(resetBtn);
+//            panel.add(resetBtn);
 
             try {
                 bestScore();

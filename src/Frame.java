@@ -3,10 +3,7 @@ import com.sun.xml.internal.bind.v2.TODO;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferStrategy;
@@ -17,7 +14,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 
-public class Frame extends JFrame implements MouseWheelListener {
+public class Frame extends JFrame implements MouseWheelListener, MouseListener {
 
     double speed = 0;
     double acceleration = 2; // m / sec ^ 2
@@ -63,6 +60,7 @@ public class Frame extends JFrame implements MouseWheelListener {
         this.setSize(1000, 1000);
         this.setTitle("Tram");
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        this.setResizable(false);
         this.addWindowListener(new WindowListener() {
             @Override
             public void windowOpened(WindowEvent e) {
@@ -106,11 +104,8 @@ public class Frame extends JFrame implements MouseWheelListener {
 
             }
         });
-        //TODO: delete
-        JButton button = new JButton();
-        JPanel panel = new JPanel();
-        panel.add(button);
-        this.add(panel);
+
+        this.addMouseListener(this);
 
 
         this.setLocation(500, 50);
@@ -533,7 +528,7 @@ public class Frame extends JFrame implements MouseWheelListener {
 
         }
 
-        if (DT > 1000){
+        if (DT > 10000){
             menu.gameOver = true;
         }
 
@@ -584,12 +579,48 @@ public class Frame extends JFrame implements MouseWheelListener {
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL){
-            if (targetScale <= 30) targetScale -= e.getWheelRotation() * e.getScrollAmount() / 100.0;
-            else targetScale = 30;
-            if (targetScale >= 10) targetScale -= e.getWheelRotation() * e.getScrollAmount() / 100.0;
-            else targetScale = 10;
-            targetScale = Math.round(targetScale * 100.0) / 100.0;
+//        if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL){
+//            if (targetScale <= 30) targetScale -= e.getWheelRotation() * e.getScrollAmount() / 100.0;
+//            else targetScale = 30;
+//            if (targetScale >= 10) targetScale -= e.getWheelRotation() * e.getScrollAmount() / 100.0;
+//            else targetScale = 10;
+//            targetScale = Math.round(targetScale * 100.0) / 100.0;
+//        }
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+        if (menu.gameOver){
+            if (e.getX() >= menu.restartImageX && e.getX() <= menu.restartImageX + menu.restartImage.getWidth()
+            && e.getY() >= menu.restartImageY && e.getY() <= menu.restartImageY + menu.restartImage.getHeight()){
+                System.out.println("hfdsiud");
+                try {
+                    menu.restart(this);
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+            }
         }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
     }
 }
