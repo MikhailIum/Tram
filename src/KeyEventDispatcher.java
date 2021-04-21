@@ -30,7 +30,6 @@ public class KeyEventDispatcher implements java.awt.KeyEventDispatcher {
 
 
         // TODO: деревья и люди(положение)
-        // TODO: zoom
         return false;
     }
 }

@@ -90,14 +90,6 @@ public class TramMenu {
 
 
             // кнопка рестарта
-//            ImageIcon resetBtnImage = new ImageIcon("res/resetBtnImage.png");
-
-//            resetBtn.setSize(resetBtnImage.getIconWidth(), resetBtnImage.getIconHeight());
-//            resetBtn.setBorder(null);
-//            resetBtn.setLocation(135,450);
-//            resetBtn.setIcon(resetBtnImage);
-
-//            panel.add(resetBtn);
 
             try {
                 bestScore();

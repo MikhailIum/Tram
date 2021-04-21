@@ -377,11 +377,6 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener {
                 }
             }
 
-//        double angleInRadians = Math.toRadians(angleInDegrees);
-//        double locationX = tramImg.getWidth() / 2;
-//        double locationY = tramImg.getHeight() / 2;
-//        AffineTransform tx = AffineTransform.getRotateInstance(angleInRadians, locationX, locationY);
-//        AffineTransformOp transform = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
 
         AffineTransform tx = new AffineTransform();
         double scale = (double) toPixels(tram.ImgWidth) / tramImg.getWidth();
@@ -451,64 +446,7 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener {
         trees.removeAll(treesToRemove);
 
 
-//        double minDiff = 100000;
-//        Person closestPerson = null;
-//        try {
-//            closestPerson = new Person(1000, 1000, 90);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        for (Person person : people) {
-//                double diff = Math.abs((person.x + person.width / 2.0) - (tram.x + tram.width / 2.0)) +
-//                        Math.abs((person.y + person.height / 2.0) - (tram.y + tram.height / 2.0));
-//                if (diff < minDiff) {
-//                    minDiff = diff;
-//                    try {
-//                        closestPerson = new Person(person.x, person.y, person.angleDeg);
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//
-//            RailBlock nextBlockInfo;
-//            RailBlock nextBlock;
-//            boolean danger = false;
-//            for (int personPosition = 0; personPosition < futurePositions; personPosition++) {
-//                for (int i = 0; i <= nextBlocks; i++) {
-//                    nextBlockInfo = railBuilder.rail.get(tram.rail.indexOf(tram.currentRailBlock) + i);
-//                    nextBlock = new RailBlock(nextBlockInfo.x, nextBlockInfo.y, nextBlockInfo.direction, nextBlockInfo.ang1, nextBlockInfo.ang2, nextBlockInfo.isRotate, nextBlockInfo.xCenter, nextBlockInfo.yCenter);
-//
-//                    int nextBlockWidth = RailBlock.width;
-//                    if (nextBlock.isRotate){
-//                        nextBlockWidth++;
-//                        if (nextBlock.direction == Direction.RIGHT){
-//                            nextBlock.y -= nextBlockWidth;
-//                        } else if (nextBlock.direction == Direction.LEFT){
-//                            nextBlock.x += RailBlock.width;
-//                        } else if (nextBlock.direction == Direction.UP){
-//                            if (nextBlock.x + nextBlockWidth == nextBlock.xCenter) {
-//                                nextBlock.x -= nextBlockWidth;
-//                            } else{
-//                                nextBlock.y += RailBlock.width;
-//                            }
-//                        }
-//
-//                    }
-//
-//                    if ((nextBlock.direction == Direction.UP && closestPerson.x + closestPerson.width >= nextBlock.x - 2 && closestPerson.x <= nextBlock.x + nextBlockWidth + 2 && closestPerson.y <= nextBlock.y && closestPerson.y + closestPerson.height >= nextBlock.y - nextBlockWidth)
-//                    || (nextBlock.direction == Direction.RIGHT && closestPerson.x + closestPerson.width >= nextBlock.x && closestPerson.x <= nextBlock.x + nextBlockWidth && closestPerson.y <= nextBlock.y + nextBlockWidth + 2 && closestPerson.y + closestPerson.height >= nextBlock.y - 2)
-//                    || (nextBlock.direction == Direction.LEFT && closestPerson.x + closestPerson.width >= nextBlock.x - nextBlockWidth && closestPerson.x <= nextBlock.x && closestPerson.y <= nextBlock.y + 2 && closestPerson.y + closestPerson.height >= nextBlock.y - nextBlockWidth - 2)){
-//                        danger = true;
-//                    }
-//
-//                    closestPerson.x += ddt / 1000 * Math.cos(Math.toRadians(closestPerson.angleDeg)) * closestPerson.speed + closestPerson.acceleration * ddt * ddt / 1000 / 1000 / 2;
-//                    closestPerson.y += ddt / 1000 * Math.sin(Math.toRadians(closestPerson.angleDeg)) * closestPerson.speed + closestPerson.acceleration * ddt * ddt / 1000 / 1000 / 2;
-//                }
-//            }
 
-//            if (danger) speed -= acceleration * dt / 1000;
-
-//        }
 
         // меню
         try {

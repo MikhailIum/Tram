@@ -62,7 +62,7 @@ public class Person {
             frame.peopleToBeRemoved.add(this);
             frame.deadPeople.add(this);
             color = Color.RED;
-            frame.points -= 50;
+            if (!frame.menu.gameOver) frame.points -= 50;
             frame.menu.deadPerson();
         }
     }
