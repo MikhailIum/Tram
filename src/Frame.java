@@ -441,6 +441,10 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener {
                 if (tree.x < x0 - 50 || tree.x > x0 + mapBlock.width + 50 || tree.y < y0 - 50 || tree.y > y0 + mapBlock.height){
                     treesToRemove.add(tree);
                 }
+                RailBlock lastBlock = railBuilder.rail.getLast();
+                if (Math.abs(lastBlock.x - tree.x) < toMeters(background.treeImage.getWidth()) && Math.abs(lastBlock.y - tree.y) < toMeters(background.treeImage.getHeight())){
+                    treesToRemove.add(tree);
+                }
             }
         }
         trees.removeAll(treesToRemove);
@@ -462,9 +466,9 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            trees.add(new Tree(this));
-
         }
+        if (DT % 15 == 0) trees.add(new Tree(this));
+
 
         if (DT > 10000){
             menu.gameOver = true;
@@ -487,6 +491,7 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener {
         personImageCounter += 0.05;
         if (personImageCounter > 3)
             personImageCounter = 0;
+
 
 
         g.dispose();                // Освободить все временные ресурсы графики (после этого в нее уже нельзя рисовать)

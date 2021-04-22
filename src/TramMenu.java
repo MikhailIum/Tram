@@ -161,7 +161,7 @@ public class TramMenu {
     }
 
     public void deadPerson(){
-        points -= 100;
+        points -= 30;
         if (points < 0) points = 0;
     }
 
