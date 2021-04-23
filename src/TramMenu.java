@@ -20,7 +20,7 @@ public class TramMenu {
     JPanel panel = new JPanel();
     int restartImageX = 0;
     int restartImageY = 0;
-    BufferedImage restartImage = ImageIO.read(new File("res/resetBtnImage.png"));
+    BufferedImage restartImage = ImageIO.read(TramMenu.class.getResourceAsStream("resetBtnImage.png"));
 
 
     TramMenu(Frame frame) throws IOException {
@@ -28,7 +28,7 @@ public class TramMenu {
     }
 
     public void drawMenu(Frame frame, Graphics g) throws IOException {
-        BufferedImage resetImage = ImageIO.read(new File("res/resetImage.png"));
+        BufferedImage resetImage = ImageIO.read(TramMenu.class.getResourceAsStream("resetImage.png"));
         JButton resetBtn = new JButton();
 
 
@@ -37,7 +37,7 @@ public class TramMenu {
         // create the font
         Font customFont = Font.getFont("TimesRoman");
             try {
-            customFont = Font.createFont(Font.TRUETYPE_FONT, new File("res/Samson.ttf")).deriveFont(Font.PLAIN, 100);
+            customFont = Font.createFont(Font.TRUETYPE_FONT, TramMenu.class.getResourceAsStream("Samson.ttf")).deriveFont(Font.PLAIN, 100);
         } catch (FontFormatException | IOException e) {
             System.out.println(e);
         }

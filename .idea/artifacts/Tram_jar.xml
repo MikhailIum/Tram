@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Tram:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Tram_jar</output-path>
+    <root id="archive" name="Tram.jar">
+      <element id="module-output" name="Tram" />
+    </root>
+  </artifact>
+</component>

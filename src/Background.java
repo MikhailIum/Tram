@@ -10,7 +10,7 @@ public class Background {
     BufferedImage treeImage;
 
     Background() throws IOException {
-        treeImage = ImageIO.read(new File("res/green_tea.png"));
+        treeImage = ImageIO.read(Background.class.getResourceAsStream("green_tea.png"));
     }
 
     public void addBackground(Graphics g, Frame frame, Tree tree){

@@ -51,16 +51,17 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener {
     long prevTime;
     boolean isClosed = false;
     boolean isRestarted = false;
-
+    BufferedImage tramIcon = ImageIO.read(Frame.class.getResourceAsStream("tramIcon.png"));
 
 
 
 
     Frame(int nextBlocks, int futurePositions, double ddt, int timeOfOnePopulation, int maxSpeed) throws IOException {
         this.setSize(1000, 1000);
-        this.setTitle("Tram");
+        this.setTitle("Tram-killer");
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.setResizable(false);
+        this.setIconImage(tramIcon);
         this.addWindowListener(new WindowListener() {
             @Override
             public void windowOpened(WindowEvent e) {
@@ -143,7 +144,7 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener {
         deadPeople = new ArrayList<>();
 
 
-        tramImg = ImageIO.read(new File("res/tram.png"));
+        tramImg = ImageIO.read(Frame.class.getResourceAsStream("tram.png"));
 
 
 
@@ -467,7 +468,7 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener {
                 e.printStackTrace();
             }
         }
-        if (DT % 15 == 0) trees.add(new Tree(this));
+        if (DT % 25 == 0) trees.add(new Tree(this));
 
 
         if (DT > 10000){

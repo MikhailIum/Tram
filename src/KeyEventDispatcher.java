@@ -29,7 +29,6 @@ public class KeyEventDispatcher implements java.awt.KeyEventDispatcher {
         }
 
 
-        // TODO: деревья и люди(положение)
         return false;
     }
 }

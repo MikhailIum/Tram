@@ -41,9 +41,9 @@ public class Person {
         color = Color.orange;
 
         int randomPerson = new Random().nextInt(7);
-                personImages.add(ImageIO.read(new File("res/people.png")).getSubimage(0, 19 * randomPerson, 18, 17));
-                personImages.add(ImageIO.read(new File("res/people.png")).getSubimage(18, 19 * randomPerson, 15, 17));
-                personImages.add(ImageIO.read(new File("res/people.png")).getSubimage(33, 19 * randomPerson, 15, 17));
+                personImages.add(ImageIO.read(Person.class.getResourceAsStream("people.png")).getSubimage(0, 19 * randomPerson, 18, 17));
+                personImages.add(ImageIO.read(Person.class.getResourceAsStream("people.png")).getSubimage(18, 19 * randomPerson, 15, 17));
+                personImages.add(ImageIO.read(Person.class.getResourceAsStream("people.png")).getSubimage(33, 19 * randomPerson, 15, 17));
 
 
     }
